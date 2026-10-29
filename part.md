@@ -22,9 +22,9 @@ flowchart LR
 5. Build clean, mobile-optimized Indonesian login view with username & password credential saving support.
 
 ### Monitoring & Evaluation Checklist:
-- [ ] Application starts without errors and auto-creates `data/dokutra.sqlite`.
-- [ ] All 11 sections are seeded with corresponding user accounts.
-- [ ] User can log in, credentials can be saved on the device, and the session persists for 6 hours across browser restarts.
+- [x] Application starts without errors and auto-creates `data/dokutra.sqlite`.
+- [x] All 11 sections are seeded with corresponding user accounts.
+- [x] User can log in, credentials can be saved on the device, and the session persists for 6 hours across browser restarts.
 
 ---
 

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#006837" />
+  <title>DOKUTRA - Pelacakan Dokumen Kemenag Kota Metro</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <!-- Top App Bar (Visible when logged in) -->
+  <header id="appHeader" class="app-header hidden">
+    <div class="header-inner">
+      <div class="header-brand">
+        <div class="kemenag-badge" aria-hidden="true">KM</div>
+        <div>
+          <h1 class="app-title">DOKUTRA</h1>
+          <p class="app-subtitle">Kantor Kementerian Agama Kota Metro</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button type="button" id="themeToggleBtn" class="icon-btn" title="Ubah Mode Terang/Gelap" aria-label="Ubah Tema">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <button type="button" id="logoutBtn" class="btn-outline-sm">Keluar</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <!-- ==================== VIEW 1: LOGIN SCREEN ==================== -->
+    <section id="loginView" class="view-section">
+      <div class="login-card">
+        <div class="login-header">
+          <div class="kemenag-emblem">
+            <span>☪</span>
+          </div>
+          <h2>DOKUTRA</h2>
+          <p class="office-title">Kantor Kementerian Agama Kota Metro</p>
+          <p class="login-desc">Sistem Pelacakan Lokasi &amp; Alur Dokumen Antar Seksi</p>
+        </div>
+
+        <!-- Saved Accounts on This Device -->
+        <div id="savedDevicesSection" class="saved-accounts-box hidden">
+          <div class="saved-accounts-title">
+            <span>📱 Akun Tersimpan di Perangkat Ini:</span>
+          </div>
+          <div id="savedAccountsList" class="saved-accounts-list"></div>
+        </div>
+
+        <div id="loginAlert" class="alert-box hidden" role="alert"></div>
+
+        <form id="loginForm" autocomplete="on">
+          <div class="form-group">
+            <label for="usernameInput">Nama Pengguna (PIC Seksi)</label>
+            <input
+              type="text"
+              id="usernameInput"
+              name="username"
+              autocomplete="username"
+              placeholder="Contoh: ptsp, kepegawaian, papki..."
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="passwordInput">Kata Sandi</label>
+            <div class="password-field-wrapper">
+              <input
+                type="password"
+                id="passwordInput"
+                name="password"
+                autocomplete="current-password"
+                placeholder="Masukkan kata sandi"
+                required
+              />
+              <button type="button" id="togglePasswordBtn" class="password-toggle-btn" aria-label="Tampilkan Kata Sandi">
+                Lihat
+              </button>
+            </div>
+          </div>
+
+          <div class="form-check-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="rememberDeviceCheckbox" checked />
+              <span>Simpan nama pengguna &amp; kata sandi di perangkat ini</span>
+            </label>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn-primary btn-block">
+            Masuk ke Aplikasi
+          </button>
+        </form>
+
+        <div class="quick-Helper">
+          <details class="accounts-helper-details">
+            <summary>Daftar Akun PIC 11 Seksi (Klik untuk isi cepat)</summary>
+            <p class="helper-note">Kata sandi bawaan seluruh seksi: <code>123456</code></p>
+            <div id="allPicAccountsList" class="pic-grid"></div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== VIEW 2: AUTHENTICATED SESSION DASHBOARD (PART 1 PREVIEW) ==================== -->
+    <section id="sessionView" class="view-section hidden">
+      <div class="welcome-banner">
+        <div class="welcome-banner-content">
+          <div>
+            <div class="section-pill" id="activeSectionCodeBadge">SEKSI</div>
+            <h2 id="activeUserFullName">Nama PIC</h2>
+            <p id="activeSectionFullName" class="section-full-title">Nama Lengkap Seksi</p>
+            <p id="activeSectionDesc" class="section-desc-text"></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header-row">
+          <h3>Daftar 11 Seksi Kantor Kemenag Kota Metro</h3>
+          <span class="badge-green">Database SQLite Aktif</span>
+        </div>
+        <p class="card-subtext">
+          Status konfigurasi seksi pada database lokal beserta aturan dropdown penerusan dokumen:
+        </p>
+        <div id="sectionsTableContainer" class="sections-list-mobile"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
+
