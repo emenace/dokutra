@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/css/style.css" />
 </head>
 <body>
-  <!-- Top App Bar (Visible when logged in) -->
+  <!-- ==================== STICKY TOP HEADER ==================== -->
   <header id="appHeader" class="app-header hidden">
     <div class="header-inner">
       <div class="header-brand">
@@ -18,9 +18,34 @@
           <p class="app-subtitle">Kantor Kementerian Agama Kota Metro</p>
         </div>
       </div>
+
+      <!-- Desktop Navigation Links (Visible on PC Web Browser) -->
+      <nav id="desktopNav" class="desktop-nav" aria-label="Menu Utama Desktop">
+        <button type="button" class="nav-tab-btn active" data-target="dashboardTab">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          Beranda &amp; Diagram
+        </button>
+        <button type="button" class="nav-tab-btn" data-target="createDocTab">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Buat Pelacakan
+        </button>
+        <button type="button" class="nav-tab-btn" data-target="inboxTab">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+          Dokumen Masuk
+          <span id="desktopInboxBadge" class="nav-badge hidden">0</span>
+        </button>
+        <button type="button" class="nav-tab-btn" data-target="sectionsTab">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+          Daftar Seksi &amp; Tema
+        </button>
+      </nav>
+
       <div class="header-actions">
+        <span id="headerSectionBadge" class="header-section-chip">SEKSI</span>
         <button type="button" id="themeToggleBtn" class="icon-btn" title="Ubah Mode Terang/Gelap" aria-label="Ubah Tema">
-          <span id="themeIcon">🌙</span>
+          <span id="themeIcon">
+            <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </span>
         </button>
         <button type="button" id="logoutBtn" class="btn-outline-sm">Keluar</button>
       </div>
@@ -43,7 +68,8 @@
         <!-- Saved Accounts on This Device -->
         <div id="savedDevicesSection" class="saved-accounts-box hidden">
           <div class="saved-accounts-title">
-            <span>📱 Akun Tersimpan di Perangkat Ini:</span>
+            <svg class="ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+            <span>Akun Tersimpan di Perangkat Ini:</span>
           </div>
           <div id="savedAccountsList" class="saved-accounts-list"></div>
         </div>
@@ -102,33 +128,222 @@
       </div>
     </section>
 
-    <!-- ==================== VIEW 2: AUTHENTICATED SESSION DASHBOARD (PART 1 PREVIEW) ==================== -->
+    <!-- ==================== VIEW 2: AUTHENTICATED APP SHELL ==================== -->
     <section id="sessionView" class="view-section hidden">
+      <!-- Active PIC Welcome Banner -->
       <div class="welcome-banner">
         <div class="welcome-banner-content">
-          <div>
+          <div class="welcome-text-block">
             <div class="section-pill" id="activeSectionCodeBadge">SEKSI</div>
             <h2 id="activeUserFullName">Nama PIC</h2>
             <p id="activeSectionFullName" class="section-full-title">Nama Lengkap Seksi</p>
             <p id="activeSectionDesc" class="section-desc-text"></p>
           </div>
+          <div class="welcome-quick-actions">
+            <button type="button" class="btn-gold-action" id="quickCreateDocBtn">
+              <svg class="ui-icon-btn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              Buat Pelacakan Dokumen Baru
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-header-row">
-          <h3>Daftar 11 Seksi Kantor Kemenag Kota Metro</h3>
-          <span class="badge-green">Database SQLite Aktif</span>
+      <!-- TAB 1: BERANDA & DIAGRAM -->
+      <div id="dashboardTab" class="tab-pane active">
+        <!-- Summary Metrics Row (Only Active Section shown) -->
+        <div class="stats-grid stats-grid-single">
+          <div class="stat-card">
+            <span class="stat-label">Seksi Aktif Anda</span>
+            <strong class="stat-value" id="statActiveSection">-</strong>
+            <span class="stat-sub">Penanggung Jawab (PIC) Unit Kerja</span>
+          </div>
         </div>
-        <p class="card-subtext">
-          Status konfigurasi seksi pada database lokal beserta aturan dropdown penerusan dokumen:
-        </p>
-        <div id="sectionsTableContainer" class="sections-list-mobile"></div>
+
+        <!-- Diagram Preview Card (Shell for Part 5) -->
+        <div class="card">
+          <div class="card-header-row">
+            <div>
+              <h3>Diagram Lokasi &amp; Alur Dokumen</h3>
+              <p class="card-subtext">
+                Menampilkan interaksi perpindahan dokumen antar seksi di Kantor Kemenag Kota Metro.
+              </p>
+            </div>
+            <button type="button" id="toggleAllSectionsDiagramBtn" class="btn-secondary-sm">
+              Tampilkan Semua Seksi
+            </button>
+          </div>
+
+          <div id="diagramShellPlaceholder" class="diagram-shell-box">
+            <div class="diagram-flow-preview">
+              <div class="flow-node active-origin">
+                <span class="flow-step-tag">Seksi Pengirim</span>
+                <strong id="previewOriginNode">PAPKI</strong>
+                <small>Dokumen Dibuat</small>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node bridge-node">
+                <span class="flow-step-tag">Jembatan Otomatis</span>
+                <strong>Humas Protokol</strong>
+                <small>Pengantar Berkas</small>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node review-node">
+                <span class="flow-step-tag">Verifikasi Administrasi</span>
+                <strong>Kasubbag TU</strong>
+                <small>Review &amp; Paraf</small>
+              </div>
+              <div class="flow-arrow">➔</div>
+              <div class="flow-node target-node">
+                <span class="flow-step-tag">Persetujuan Akhir</span>
+                <strong>Kepala Kantor</strong>
+                <small>Tujuan Akhir</small>
+              </div>
+            </div>
+            <p class="diagram-helper-caption">
+              💡 <strong>Mode Fokus Aktif:</strong> Hanya menampilkan seksi yang dilalui dokumen. Gunakan tombol <em>"Buat Pelacakan"</em> untuk mulai melacak dokumen baru (Part 3).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: BUAT PELACAKAN DOKUMEN BARU (Prepared Shell for Part 3) -->
+      <div id="createDocTab" class="tab-pane hidden">
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Buat Pelacakan Dokumen Baru</h3>
+            <span class="badge-green">Siap untuk Part 3</span>
+          </div>
+          <p class="card-subtext">
+            Formulir pendaftaran pelacakan dokumen baru dengan ID otomatis (Tanggal+Waktu+NamaSeksi) dan perutean otomatis Humas Protokol &amp; Kasubbag TU akan diaktifkan pada <strong>Part 3</strong>.
+          </p>
+          <div class="part-preview-list">
+            <div class="preview-field-item">
+              <strong>1. Tanggal Dokumen</strong>
+              <span>Wajib diisi, otomatis memilih tanggal hari ini.</span>
+            </div>
+            <div class="preview-field-item">
+              <strong>2. Nomor Dokumen &amp; Hal</strong>
+              <span>Nomor Dokumen opsional, Hal dokumen wajib diisi.</span>
+            </div>
+            <div class="preview-field-item">
+              <strong>3. Sifat Dokumen</strong>
+              <span>Pilihan Dropdown: <code>Biasa</code>, <code>Penting</code>, <code>Rahasia</code>.</span>
+            </div>
+            <div class="preview-field-item">
+              <strong>4. Teruskan Dokumen Ke (10 Seksi)</strong>
+              <span id="createTabDropdownPreview">Memuat daftar 10 seksi tujuan...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: DOKUMEN MASuk (Prepared Shell for Part 4) -->
+      <div id="inboxTab" class="tab-pane hidden">
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Dokumen Masuk Seksi Anda</h3>
+            <span class="badge-green">Siap untuk Part 4</span>
+          </div>
+          <p class="card-subtext">
+            Daftar dokumen yang dikirim ke seksi Anda beserta aksi review (<strong>Diterima</strong>, <strong>Diproses</strong>, <strong>Diteruskan</strong>) akan diaktifkan pada <strong>Part 4</strong>.
+          </p>
+          <div class="empty-state-box">
+            <div class="empty-icon">
+              <svg class="ui-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            </div>
+            <h4>Belum Ada Dokumen Masuk</h4>
+            <p>Ketika seksi lain meneruskan dokumen ke seksi Anda, notifikasi besar akan tampil di Beranda dan dapat direview di sini.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: DAFTAR 11 SEKSI & KONFIGURASI TEMA (Part 2 Core View) -->
+      <div id="sectionsTab" class="tab-pane hidden">
+        <!-- Theme Configuration Card -->
+        <div class="card mb-card">
+          <div class="card-header-row">
+            <div>
+              <h3>Konfigurasi Tampilan &amp; Tema Pengguna</h3>
+              <p class="card-subtext">
+                Pilih mode tampilan aplikasi. Pilihan Anda otomatis tersimpan pada profil akun di database.
+              </p>
+            </div>
+            <span id="currentThemeStatusBadge" class="badge-green">Mode Terang</span>
+          </div>
+
+          <div class="theme-selector-grid">
+            <button type="button" id="selectLightModeBtn" class="theme-option-card active">
+              <div class="theme-preview-swatch swatch-light">
+                <span class="swatch-bar"></span>
+                <span class="swatch-card">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </span>
+              </div>
+              <div class="theme-option-info">
+                <strong>Mode Terang (Light Mode)</strong>
+                <span>Hijau Kemenag cerah &amp; bersih untuk ruangan terang</span>
+              </div>
+            </button>
+
+            <button type="button" id="selectDarkModeBtn" class="theme-option-card">
+              <div class="theme-preview-swatch swatch-dark">
+                <span class="swatch-bar"></span>
+                <span class="swatch-card">
+                  <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                </span>
+              </div>
+              <div class="theme-option-info">
+                <strong>Mode Gelap (Dark Mode)</strong>
+                <span>Nyaman di mata &amp; hemat baterai pada layar ponsel</span>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <!-- 11 Sections Master List Card -->
+        <div class="card">
+          <div class="card-header-row">
+            <h3>Daftar 11 Seksi Kantor Kemenag Kota Metro</h3>
+            <span class="badge-green">Database SQLite Aktif</span>
+          </div>
+          <p class="card-subtext">
+            Status konfigurasi seksi pada database lokal beserta aturan dropdown penerusan dokumen:
+          </p>
+          <div id="sectionsTableContainer" class="sections-list-mobile"></div>
+        </div>
       </div>
     </section>
   </main>
 
+  <!-- ==================== MOBILE BOTTOM NAVIGATION BAR (Phone Webview) ==================== -->
+  <nav id="mobileBottomNav" class="mobile-bottom-nav hidden" aria-label="Navigasi Bawah">
+    <button type="button" class="bottom-nav-item active" data-target="dashboardTab">
+      <span class="bottom-nav-icon">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+      </span>
+      <span class="bottom-nav-label">Beranda</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-target="createDocTab">
+      <span class="bottom-nav-icon">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      </span>
+      <span class="bottom-nav-label">Buat Baru</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-target="inboxTab">
+      <span class="bottom-nav-icon">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+      </span>
+      <span class="bottom-nav-label">Dokumen Masuk</span>
+      <span id="mobileInboxBadge" class="bottom-nav-badge hidden">0</span>
+    </button>
+    <button type="button" class="bottom-nav-item" data-target="sectionsTab">
+      <span class="bottom-nav-icon">
+        <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><line x1="9" y1="22" x2="9" y2="22.01"></line><line x1="15" y1="22" x2="15" y2="22.01"></line><line x1="9" y1="6" x2="9" y2="6.01"></line><line x1="15" y1="6" x2="15" y2="6.01"></line><line x1="9" y1="10" x2="9" y2="10.01"></line><line x1="15" y1="10" x2="15" y2="10.01"></line><line x1="9" y1="14" x2="9" y2="14.01"></line><line x1="15" y1="14" x2="15" y2="14.01"></line><line x1="9" y1="18" x2="9" y2="18.01"></line><line x1="15" y1="18" x2="15" y2="18.01"></line></svg>
+      </span>
+      <span class="bottom-nav-label">Seksi &amp; Tema</span>
+    </button>
+  </nav>
+
   <script src="/js/app.js"></script>
 </body>
 </html>
-

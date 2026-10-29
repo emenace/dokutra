@@ -37,9 +37,9 @@ flowchart LR
 5. Create section listing API endpoint (`/api/sections`) with built-in separation between all sections (11) and target dropdown sections (10, excluding Humas).
 
 ### Monitoring & Evaluation Checklist:
-- [ ] UI renders comfortably in mobile viewport dimensions (360px - 430px) without horizontal scrolling.
-- [ ] Kemenag Green color scheme displays cleanly in both Light and Dark modes.
-- [ ] Toggling theme updates the UI instantly and persists after logout and re-login.
+- [x] UI renders comfortably in mobile viewport dimensions (360px - 430px) without horizontal scrolling.
+- [x] Kemenag Green color scheme displays cleanly in both Light and Dark modes.
+- [x] Toggling theme updates the UI instantly and persists after logout and re-login.
 
 ---
 

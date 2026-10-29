@@ -1,5 +1,6 @@
 /**
- * DOKUTRA Frontend Application Controller (Part 1: Auth, Device Credential Storage, & Session Management)
+ * DOKUTRA Frontend Application Controller
+ * Part 1 & Part 2: Auth, 6-Hour Session, Responsive App Shell, Kemenag Green Theme & User Theme Config
  */
 const SAVED_CREDENTIALS_KEY = 'dokutra_saved_device_accounts_v1';
 const LOCAL_THEME_KEY = 'dokutra_theme_mode';
@@ -7,13 +8,19 @@ const LOCAL_THEME_KEY = 'dokutra_theme_mode';
 const state = {
   currentUser: null,
   sessionExpiresAt: null,
-  sections: []
+  sections: [],
+  dropdownTargets: [],
+  activeTab: 'dashboardTab'
 };
 
-// DOM Elements
+// DOM Elements - Layout & Navigation
 const appHeader = document.getElementById('appHeader');
+const mobileBottomNav = document.getElementById('mobileBottomNav');
+const headerSectionBadge = document.getElementById('headerSectionBadge');
 const loginView = document.getElementById('loginView');
 const sessionView = document.getElementById('sessionView');
+
+// DOM Elements - Login
 const loginForm = document.getElementById('loginForm');
 const usernameInput = document.getElementById('usernameInput');
 const passwordInput = document.getElementById('passwordInput');
@@ -23,32 +30,105 @@ const loginAlert = document.getElementById('loginAlert');
 const savedDevicesSection = document.getElementById('savedDevicesSection');
 const savedAccountsList = document.getElementById('savedAccountsList');
 const allPicAccountsList = document.getElementById('allPicAccountsList');
+
+// DOM Elements - Theme & Actions
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 const themeIcon = document.getElementById('themeIcon');
+const currentThemeStatusBadge = document.getElementById('currentThemeStatusBadge');
+const selectLightModeBtn = document.getElementById('selectLightModeBtn');
+const selectDarkModeBtn = document.getElementById('selectDarkModeBtn');
 const logoutBtn = document.getElementById('logoutBtn');
+const quickCreateDocBtn = document.getElementById('quickCreateDocBtn');
 
+// DOM Elements - Dashboard & Sections
 const activeSectionCodeBadge = document.getElementById('activeSectionCodeBadge');
 const activeUserFullName = document.getElementById('activeUserFullName');
 const activeSectionFullName = document.getElementById('activeSectionFullName');
 const activeSectionDesc = document.getElementById('activeSectionDesc');
+const statActiveSection = document.getElementById('statActiveSection');
+const statTotalSections = document.getElementById('statTotalSections');
+const statDropdownCount = document.getElementById('statDropdownCount');
+const previewOriginNode = document.getElementById('previewOriginNode');
+const createTabDropdownPreview = document.getElementById('createTabDropdownPreview');
 const sectionsTableContainer = document.getElementById('sectionsTableContainer');
 
 /**
- * Apply Light or Dark theme to HTML document and save locally
+ * Switch active navigation tab in the authenticated App Shell
+ * @param {string} targetTabId
+ */
+function switchTab(targetTabId) {
+  state.activeTab = targetTabId;
+
+  // Toggle tab panes
+  const panes = document.querySelectorAll('.tab-pane');
+  panes.forEach((pane) => {
+    if (pane.id === targetTabId) {
+      pane.classList.remove('hidden');
+      pane.classList.add('active');
+    } else {
+      pane.classList.add('hidden');
+      pane.classList.remove('active');
+    }
+  });
+
+  // Update desktop top nav buttons
+  document.querySelectorAll('.nav-tab-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.target === targetTabId);
+  });
+
+  // Update mobile bottom nav buttons
+  document.querySelectorAll('.bottom-nav-item').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.target === targetTabId);
+  });
+}
+
+const SUN_ICON_SVG = '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>';
+const MOON_ICON_SVG = '<svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+
+/**
+ * Apply Light or Dark theme to HTML document and update UI indicators
  * @param {'light' | 'dark'} themeMode
  */
 function applyTheme(themeMode) {
   const mode = themeMode === 'dark' ? 'dark' : 'light';
   document.documentElement.setAttribute('data-theme', mode);
   localStorage.setItem(LOCAL_THEME_KEY, mode);
+
   if (themeIcon) {
-    themeIcon.textContent = mode === 'dark' ? '☀️' : '🌙';
+    themeIcon.innerHTML = mode === 'dark' ? SUN_ICON_SVG : MOON_ICON_SVG;
+  }
+  if (currentThemeStatusBadge) {
+    currentThemeStatusBadge.textContent = mode === 'dark' ? 'Mode Gelap Aktif' : 'Mode Terang Aktif';
+  }
+  if (selectLightModeBtn && selectDarkModeBtn) {
+    selectLightModeBtn.classList.toggle('active', mode === 'light');
+    selectDarkModeBtn.classList.toggle('active', mode === 'dark');
+  }
+}
+
+/**
+ * Persist theme selection to backend user profile and apply immediately
+ * @param {'light' | 'dark'} nextTheme
+ */
+async function updateAndSaveUserTheme(nextTheme) {
+  applyTheme(nextTheme);
+
+  if (state.currentUser) {
+    state.currentUser.theme_mode = nextTheme;
+    try {
+      await fetch('/api/auth/theme', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ theme_mode: nextTheme })
+      });
+    } catch (err) {
+      console.warn('Failed to persist theme to server:', err);
+    }
   }
 }
 
 /**
  * Load saved device credentials from localStorage
- * @returns {Array<{username: string, password: string, sectionName: string, fullName: string}>}
  */
 function getSavedDeviceAccounts() {
   try {
@@ -76,7 +156,6 @@ function saveAccountOnDevice(username, password, sectionName, fullName) {
       fullName: fullName || username,
       savedAt: Date.now()
     });
-    // Keep up to 5 recent accounts on the device
     localStorage.setItem(SAVED_CREDENTIALS_KEY, JSON.stringify(existing.slice(0, 5)));
   } catch (err) {
     console.warn('Unable to save credentials to localStorage:', err);
@@ -139,7 +218,6 @@ function renderSavedDeviceAccounts() {
     savedAccountsList.appendChild(row);
   });
 
-  // Pre-fill the most recently used account into the form inputs
   if (!usernameInput.value && saved[0]) {
     usernameInput.value = saved[0].username;
     passwordInput.value = saved[0].password;
@@ -177,7 +255,7 @@ async function loadAvailablePicAccounts() {
 }
 
 /**
- * Load and display the 11 office sections inside the authenticated view
+ * Load and display the 11 office sections and 10 dropdown targets
  */
 async function loadSectionsList() {
   try {
@@ -186,6 +264,19 @@ async function loadSectionsList() {
     if (!data.success) return;
 
     state.sections = data.sections || [];
+    state.dropdownTargets = data.dropdown_targets || [];
+
+    if (statTotalSections) {
+      statTotalSections.textContent = `${state.sections.length} Seksi`;
+    }
+    if (statDropdownCount) {
+      statDropdownCount.textContent = `${state.dropdownTargets.length} Seksi`;
+    }
+    if (createTabDropdownPreview) {
+      const names = state.dropdownTargets.map((s) => s.short_name).join(', ');
+      createTabDropdownPreview.textContent = `Pilihan tersedia: ${names} (Humas Protokol otomatis menjadi jembatan).`;
+    }
+
     sectionsTableContainer.innerHTML = '';
 
     state.sections.forEach((sec) => {
@@ -222,13 +313,25 @@ function showAuthenticatedView(user, sessionExpiresAt) {
 
   loginView.classList.add('hidden');
   appHeader.classList.remove('hidden');
+  mobileBottomNav.classList.remove('hidden');
   sessionView.classList.remove('hidden');
 
   activeSectionCodeBadge.textContent = `SEKSI: ${user.section_short_name}`;
+  if (headerSectionBadge) {
+    headerSectionBadge.textContent = `PIC: ${user.section_short_name}`;
+  }
+  if (statActiveSection) {
+    statActiveSection.textContent = user.section_short_name;
+  }
+  if (previewOriginNode) {
+    previewOriginNode.textContent = user.section_short_name;
+  }
+
   activeUserFullName.textContent = user.full_name;
   activeSectionFullName.textContent = user.section_name;
   activeSectionDesc.textContent = user.section_description || '';
 
+  switchTab('dashboardTab');
   loadSectionsList();
 }
 
@@ -238,6 +341,7 @@ function showAuthenticatedView(user, sessionExpiresAt) {
 function showLoginView() {
   state.currentUser = null;
   appHeader.classList.add('hidden');
+  mobileBottomNav.classList.add('hidden');
   sessionView.classList.add('hidden');
   loginView.classList.remove('hidden');
   renderSavedDeviceAccounts();
@@ -271,7 +375,6 @@ async function submitLogin(username, password, rememberDevice) {
       );
     }
 
-    // Store in browser Credential Management API if supported by phone webview
     if (window.PasswordCredential && rememberDevice) {
       try {
         const cred = new window.PasswordCredential({
@@ -286,7 +389,7 @@ async function submitLogin(username, password, rememberDevice) {
     }
 
     showAuthenticatedView(result.user, result.sessionExpiresAt);
-  } catch (err) {
+  } catch {
     loginAlert.textContent = 'Tidak dapat terhubung ke server DOKUTRA.';
     loginAlert.classList.remove('hidden');
   }
@@ -315,7 +418,7 @@ async function checkExistingSession() {
   showLoginView();
 }
 
-// Event Listeners
+// Event Listeners - Login
 loginForm.addEventListener('submit', (e) => {
   e.preventDefault();
   const username = usernameInput.value.trim();
@@ -330,24 +433,35 @@ togglePasswordBtn.addEventListener('click', () => {
   togglePasswordBtn.textContent = isPassword ? 'Sembunyikan' : 'Lihat';
 });
 
-themeToggleBtn.addEventListener('click', async () => {
+// Event Listeners - Theme Toggles (Header icon + Theme Config Cards)
+themeToggleBtn.addEventListener('click', () => {
   const currentTheme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  applyTheme(nextTheme);
-
-  if (state.currentUser) {
-    state.currentUser.theme_mode = nextTheme;
-    try {
-      await fetch('/api/auth/theme', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ theme_mode: nextTheme })
-      });
-    } catch (err) {
-      console.warn('Failed to persist theme to server:', err);
-    }
-  }
+  updateAndSaveUserTheme(nextTheme);
 });
+
+if (selectLightModeBtn) {
+  selectLightModeBtn.addEventListener('click', () => updateAndSaveUserTheme('light'));
+}
+if (selectDarkModeBtn) {
+  selectDarkModeBtn.addEventListener('click', () => updateAndSaveUserTheme('dark'));
+}
+
+// Event Listeners - Navigation Tabs (Desktop Top Nav & Mobile Bottom Nav)
+document.querySelectorAll('.nav-tab-btn, .bottom-nav-item').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const targetTab = btn.dataset.target;
+    if (targetTab) {
+      switchTab(targetTab);
+    }
+  });
+});
+
+if (quickCreateDocBtn) {
+  quickCreateDocBtn.addEventListener('click', () => {
+    switchTab('createDocTab');
+  });
+}
 
 logoutBtn.addEventListener('click', async () => {
   try {
@@ -362,4 +476,3 @@ document.addEventListener('DOMContentLoaded', () => {
   loadAvailablePicAccounts();
   checkExistingSession();
 });
-
