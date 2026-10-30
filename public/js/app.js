@@ -200,6 +200,9 @@ function switchTab(targetTabId) {
   if ((targetTabId === 'dashboardTab' || targetTabId === 'inboxTab') && state.currentUser) {
     loadInboxAndNotifications();
     loadTrackedDocuments();
+    if (window.DokutraDiagram) {
+      window.DokutraDiagram.refreshDiagram();
+    }
   }
 }
 
@@ -1012,6 +1015,9 @@ function renderTrackedDocumentsList() {
     }
 
     card.addEventListener('click', () => {
+      if (window.DokutraDiagram) {
+        window.DokutraDiagram.selectFocusedDocument(doc.id);
+      }
       openReviewModal(doc);
     });
 
@@ -1268,6 +1274,9 @@ if (reviewActionForm) {
       }
       await loadInboxAndNotifications();
       await loadTrackedDocuments();
+      if (window.DokutraDiagram) {
+        window.DokutraDiagram.refreshDiagram(result.document ? result.document.id : null);
+      }
     } catch {
       reviewModalAlert.textContent = 'Terjadi gangguan jaringan saat menyimpan review dokumen.';
       reviewModalAlert.classList.remove('hidden');
@@ -1339,6 +1348,12 @@ if (createDocForm) {
       await prepareCreateDocumentForm();
       await loadInboxAndNotifications();
       await loadTrackedDocuments();
+      if (window.DokutraDiagram && result.document) {
+        window.DokutraDiagram.refreshDiagram(result.document.id);
+      }
+      if (window.DokutraDiagram) {
+        window.DokutraDiagram.refreshDiagram(result.document ? result.document.id : null);
+      }
     } catch {
       const netErr = 'Terjadi gangguan jaringan saat menyimpan dokumen.';
       createDocAlert.textContent = netErr;
@@ -1356,8 +1371,17 @@ logoutBtn.addEventListener('click', async () => {
   }
 });
 
+// Expose current user section short name for diagram fallback
+window.dokutraCurrentUserSectionName = () =>
+  state.currentUser ? state.currentUser.section_short_name : 'Seksi Anda';
+
 // Initialize on DOM load
 document.addEventListener('DOMContentLoaded', () => {
+  if (window.DokutraDiagram) {
+    window.DokutraDiagram.initDiagram({
+      onOpenDocumentModal: openReviewModal
+    });
+  }
   loadAvailablePicAccounts();
   checkExistingSession();
 });

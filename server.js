@@ -16,7 +16,8 @@ const {
   handleCreateDocument,
   handleGetDocuments,
   handleGetInboxDocuments,
-  handleReviewDocument
+  handleReviewDocument,
+  handleGetDiagramData
 } = require('./src/routes/documentRoutes');
 
 // Initialize SQLite tables and 11 office section seeds on startup
@@ -127,7 +128,11 @@ function createAppServer() {
         return handleCreateDocument(req, res, body);
       }
 
-      // --- Incoming Document Inbox & Review Routes (Part 4) ---
+      // --- Incoming Document Inbox, Review & Diagram Routes (Part 4 & Part 5) ---
+      if (pathname === '/api/documents/diagram' && method === 'GET') {
+        return handleGetDiagramData(req, res, parsedUrl.searchParams);
+      }
+
       if (pathname === '/api/documents/inbox' && method === 'GET') {
         return handleGetInboxDocuments(req, res);
       }

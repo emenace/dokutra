@@ -176,13 +176,13 @@
           </div>
         </div>
 
-        <!-- Diagram Preview Card (Shell for Part 5) -->
+        <!-- Interactive Diagram Visualizer Card (Part 5: Focused & All-Section Modes) -->
         <div class="card">
           <div class="card-header-row">
             <div>
               <h3>Diagram Lokasi &amp; Alur Dokumen</h3>
-              <p class="card-subtext">
-                Menampilkan interaksi perpindahan dokumen antar seksi di Kantor Kemenag Kota Metro.
+              <p class="card-subtext" id="diagramModeSubtitle">
+                Mode Fokus: Hanya menampilkan seksi yang dilalui oleh dokumen terpilih agar tampilan tetap ringkas dan jelas.
               </p>
             </div>
             <button type="button" id="toggleAllSectionsDiagramBtn" class="btn-secondary-sm">
@@ -190,35 +190,58 @@
             </button>
           </div>
 
-          <div id="diagramShellPlaceholder" class="diagram-shell-box">
-            <div class="diagram-flow-preview">
-              <div class="flow-node active-origin">
-                <span class="flow-step-tag">Seksi Pengirim</span>
-                <strong id="previewOriginNode">PAPKI</strong>
-                <small>Dokumen Dibuat</small>
+          <!-- MODE 1: FOCUSED DIAGRAM VIEW (Default - Only Involved Sections) -->
+          <div id="focusedDiagramViewContainer" class="diagram-shell-box">
+            <div id="diagramDocSelectorBar" class="diagram-doc-selector-bar hidden">
+              <div class="diagram-select-group">
+                <label for="diagramDocumentSelect">Dokumen Fokus di Diagram:</label>
+                <select id="diagramDocumentSelect"></select>
               </div>
-              <div class="flow-arrow">➔</div>
-              <div class="flow-node bridge-node">
-                <span class="flow-step-tag">Jembatan Otomatis</span>
-                <strong>Humas Protokol</strong>
-                <small>Pengantar Berkas</small>
-              </div>
-              <div class="flow-arrow">➔</div>
-              <div class="flow-node review-node">
-                <span class="flow-step-tag">Verifikasi Administrasi</span>
-                <strong>Kasubbag TU</strong>
-                <small>Review &amp; Paraf</small>
-              </div>
-              <div class="flow-arrow">➔</div>
-              <div class="flow-node target-node">
-                <span class="flow-step-tag">Persetujuan Akhir</span>
-                <strong>Kepala Kantor</strong>
-                <small>Tujuan Akhir</small>
+              <button type="button" id="diagramOpenDetailBtn" class="btn-outline-sm">
+                Detail &amp; Riwayat
+              </button>
+            </div>
+
+            <div id="focusedDiagramCanvas">
+              <div class="diagram-flow-preview">
+                <div class="flow-node active-origin">
+                  <span class="flow-step-tag">Seksi Pengirim</span>
+                  <strong id="previewOriginNode">PAPKI</strong>
+                  <small>Dokumen Dibuat</small>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node bridge-node">
+                  <span class="flow-step-tag">Jembatan Otomatis</span>
+                  <strong>Humas Protokol</strong>
+                  <small>Pengantar Berkas</small>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node review-node">
+                  <span class="flow-step-tag">Verifikasi Administrasi</span>
+                  <strong>Kasubbag TU</strong>
+                  <small>Review &amp; Paraf</small>
+                </div>
+                <div class="flow-arrow">➔</div>
+                <div class="flow-node target-node">
+                  <span class="flow-step-tag">Persetujuan Akhir</span>
+                  <strong>Kepala Kantor</strong>
+                  <small>Tujuan Akhir</small>
+                </div>
               </div>
             </div>
-            <p class="diagram-helper-caption">
+
+            <p id="focusedDiagramCaption" class="diagram-helper-caption">
               <strong>Mode Fokus Aktif:</strong> Hanya menampilkan seksi yang dilalui dokumen. Pilih dokumen di bawah atau gunakan menu <em>"Buat Pelacakan"</em> untuk mendaftarkan dokumen baru.
             </p>
+          </div>
+
+          <!-- MODE 2: ALL 11 SECTIONS VIEW (Read-Only Toggle) -->
+          <div id="allSectionsDiagramViewContainer" class="diagram-shell-box hidden">
+            <div class="all-sections-readonly-banner">
+              <strong>Tampilan Semua Seksi (Mode Baca Saja / Read-Only):</strong>
+              Menampilkan pemetaan seluruh 11 seksi Kantor Kemenag Kota Metro beserta posisi dokumen aktif saat ini. Klik pada dokumen untuk melihat riwayat perjalanannya.
+            </div>
+            <div id="allSectionsGridContainer" class="all-sections-diagram-grid"></div>
           </div>
         </div>
 
@@ -642,6 +665,7 @@
     </button>
   </nav>
 
+  <script src="/js/diagram.js"></script>
   <script src="/js/app.js"></script>
 </body>
 </html>

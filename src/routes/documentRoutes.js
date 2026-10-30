@@ -283,6 +283,110 @@ function handleCreateDocument(req, res, body) {
 }
 
 /**
+ * Build Focused Diagram Trajectory nodes for a single document.
+ * Includes ONLY the sections involved in this document's movement:
+ * Origin -> Visited Sections (from logs) -> Current Section -> Remaining Planned Route Sections
+ * @param {object} doc
+ * @param {Map<string, object>} sectionsByCode
+ */
+function buildDocumentTrajectory(doc, sectionsByCode) {
+  const orderedCodes = [];
+  const visitedSet = new Set();
+
+  const addCode = (code) => {
+    if (!code) return;
+    const upper = String(code).toUpperCase();
+    if (!orderedCodes.includes(upper)) {
+      orderedCodes.push(upper);
+    }
+  };
+
+  if (doc.origin_section_code) {
+    addCode(doc.origin_section_code);
+    visitedSet.add(String(doc.origin_section_code).toUpperCase());
+  }
+
+  (doc.logs || []).forEach((log) => {
+    if (log.from_section_code) {
+      addCode(log.from_section_code);
+      visitedSet.add(String(log.from_section_code).toUpperCase());
+    }
+    if (log.to_section_code) {
+      addCode(log.to_section_code);
+      visitedSet.add(String(log.to_section_code).toUpperCase());
+    }
+  });
+
+  if (doc.current_section_code) {
+    addCode(doc.current_section_code);
+    visitedSet.add(String(doc.current_section_code).toUpperCase());
+  }
+
+  (doc.planned_route || []).forEach((code) => {
+    addCode(code);
+  });
+
+  if (doc.final_target_section_code) {
+    addCode(doc.final_target_section_code);
+  }
+
+  const currentCode = String(doc.current_section_code || '').toUpperCase();
+  const originCode = String(doc.origin_section_code || '').toUpperCase();
+  const finalCode = String(doc.final_target_section_code || '').toUpperCase();
+
+  return orderedCodes
+    .map((code, idx) => {
+      const sec = sectionsByCode.get(code);
+      if (!sec) return null;
+
+      const isCurrent = code === currentCode;
+      const isVisited = visitedSet.has(code);
+      const isOrigin = code === originCode;
+      const isFinalTarget = code === finalCode;
+
+      let nodeState = 'upcoming'; // 'completed' | 'current' | 'upcoming'
+      if (isCurrent) {
+        nodeState = 'current';
+      } else if (isVisited) {
+        nodeState = 'completed';
+      }
+
+      let roleLabel = 'Seksi Transit / Review';
+      if (isOrigin && isCurrent && doc.current_status === 'SELESAI') {
+        roleLabel = 'Seksi Asal (Selesai & Arsip)';
+      } else if (isOrigin && isCurrent && doc.is_returned_signed_to_origin) {
+        roleLabel = 'Kembali ke Seksi Asal';
+      } else if (isOrigin) {
+        roleLabel = 'Seksi Pengirim Awal';
+      } else if (code === 'HUMAS') {
+        roleLabel = 'Jembatan Protokol';
+      } else if (code === 'KASUBBAG') {
+        roleLabel = 'Verifikasi / Paraf';
+      } else if (code === 'KEPALA') {
+        roleLabel = 'Persetujuan / Tandatangan';
+      } else if (isFinalTarget) {
+        roleLabel = 'Seksi Tujuan';
+      }
+
+      return {
+        step_number: idx + 1,
+        section_id: sec.id,
+        section_code: sec.code,
+        section_name: sec.name,
+        section_short_name: sec.short_name,
+        node_state: nodeState,
+        is_current: isCurrent,
+        is_visited: isVisited,
+        is_origin: isOrigin,
+        is_final_target: isFinalTarget,
+        role_label: roleLabel,
+        current_status: isCurrent ? doc.current_status : null
+      };
+    })
+    .filter(Boolean);
+}
+
+/**
  * Fetch a single document with hydrated section names and audit logs
  * @param {number} documentId
  */
@@ -357,15 +461,22 @@ function getHydratedDocumentById(documentId) {
     lastForwardLog.to_section_id === doc.origin_section_id &&
     hasBeenSignedByPimpinanToHumas;
 
-  return {
+  const allSections = db.prepare('SELECT * FROM sections ORDER BY sort_order ASC').all();
+  const sectionsByCode = new Map(allSections.map((s) => [s.code.toUpperCase(), s]));
+
+  const hydratedDoc = {
     ...doc,
     planned_route: plannedRoute,
     is_return_from_pimpinan: isReturnFromPimpinan,
     is_returned_signed_to_origin: isReturnedSignedToOrigin,
+    is_returning_direction: hasBeenSignedByPimpinanToHumas,
     is_archived: doc.current_status === 'SELESAI',
     last_forward_from_code: lastForwardLog ? lastForwardLog.from_section_code : null,
     logs
   };
+
+  hydratedDoc.trajectory_nodes = buildDocumentTrajectory(hydratedDoc, sectionsByCode);
+  return hydratedDoc;
 }
 
 /**
@@ -402,6 +513,9 @@ function handleGetDocuments(req, res, queryParams) {
     JOIN users u ON d.created_by_user_id = u.id
     ORDER BY d.id DESC
   `).all();
+
+  const allSections = db.prepare('SELECT * FROM sections ORDER BY sort_order ASC').all();
+  const sectionsByCode = new Map(allSections.map((s) => [s.code.toUpperCase(), s]));
 
   const hydratedDocs = allDocs.map((doc) => {
     const logs = db.prepare(`
@@ -445,7 +559,7 @@ function handleGetDocuments(req, res, queryParams) {
       lastForwardLog.to_section_id === doc.origin_section_id &&
       hasBeenSignedByPimpinanToHumas;
 
-    return {
+    const hydratedDoc = {
       ...doc,
       planned_route: plannedRoute,
       is_return_from_pimpinan: isReturnFromPimpinan,
@@ -454,6 +568,9 @@ function handleGetDocuments(req, res, queryParams) {
       last_forward_from_code: lastForwardLog ? lastForwardLog.from_section_code : null,
       logs
     };
+
+    hydratedDoc.trajectory_nodes = buildDocumentTrajectory(hydratedDoc, sectionsByCode);
+    return hydratedDoc;
   });
 
   if (viewMode === 'all') {
@@ -785,6 +902,73 @@ function handleReviewDocument(req, res, documentId, body) {
   }
 }
 
+/**
+ * Handle GET /api/documents/diagram
+ * Returns:
+ * - focused_document: The requested document (by ?document_id=) or most recent active document for the user's section,
+ *   including its `trajectory_nodes` (ONLY sections participating in its path).
+ * - all_sections_map: All 11 office sections with the active documents currently stationed at each section (Read-Only mode).
+ */
+function handleGetDiagramData(req, res, queryParams) {
+  const user = requireAuth(req, res);
+  if (!user) return;
+
+  const rawDocId =
+    queryParams && typeof queryParams.get === 'function' ? queryParams.get('document_id') : null;
+  const requestedDocId = rawDocId ? Number(rawDocId) : null;
+  const allSections = db.prepare('SELECT * FROM sections ORDER BY sort_order ASC').all();
+
+  const allDocIds = db.prepare('SELECT id FROM documents ORDER BY updated_at DESC, id DESC').all();
+  const allHydratedDocs = allDocIds.map((r) => getHydratedDocumentById(r.id)).filter(Boolean);
+
+  // Documents involving the current user's section
+  const sectionDocs = allHydratedDocs.filter((doc) => {
+    if (
+      doc.origin_section_id === user.section_id ||
+      doc.current_section_id === user.section_id ||
+      doc.pending_section_id === user.section_id ||
+      doc.final_target_section_id === user.section_id
+    ) {
+      return true;
+    }
+    return doc.logs.some(
+      (l) => l.from_section_id === user.section_id || l.to_section_id === user.section_id
+    );
+  });
+
+  let focusedDocument = null;
+  if (requestedDocId) {
+    focusedDocument = allHydratedDocs.find((d) => d.id === requestedDocId) || null;
+  }
+  if (!focusedDocument && sectionDocs.length > 0) {
+    // Prefer an active (non-archived) document first
+    focusedDocument = sectionDocs.find((d) => d.current_status !== 'SELESAI') || sectionDocs[0];
+  }
+
+  // Build All-Sections Read-Only Map (11 sections with active documents stationed at each section)
+  const activeOfficeDocs = allHydratedDocs.filter((d) => d.current_status !== 'SELESAI');
+  const allSectionsMap = allSections.map((sec) => {
+    const stationedDocs = activeOfficeDocs.filter((d) => d.current_section_id === sec.id);
+    return {
+      section_id: sec.id,
+      section_code: sec.code,
+      section_name: sec.name,
+      section_short_name: sec.short_name,
+      sort_order: sec.sort_order,
+      is_user_section: sec.id === user.section_id,
+      active_documents_count: stationedDocs.length,
+      stationed_documents: stationedDocs
+    };
+  });
+
+  return res.sendJson(200, {
+    success: true,
+    focused_document: focusedDocument,
+    section_documents: sectionDocs,
+    all_sections_map: allSectionsMap
+  });
+}
+
 module.exports = {
   handleGeneratePreviewId,
   handleGetRoutePreview,
@@ -792,6 +976,7 @@ module.exports = {
   handleGetDocuments,
   handleGetInboxDocuments,
   handleReviewDocument,
+  handleGetDiagramData,
   getHydratedDocumentById
 };
 

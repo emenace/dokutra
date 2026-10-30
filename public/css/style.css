@@ -2037,3 +2037,308 @@ body {
 .popup-feedback-btn {
   height: 44px;
 }
+
+/* ==================== PART 5: INTERACTIVE DIAGRAM VISUALIZER (FOCUSED & ALL SECTIONS) ==================== */
+.btn-secondary-sm.active-mode-btn {
+  background-color: var(--kemenag-primary);
+  color: #ffffff;
+}
+
+.diagram-doc-selector-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px dashed var(--border-color);
+}
+
+.diagram-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+}
+
+.diagram-select-group label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.diagram-select-group select {
+  height: 40px;
+  padding: 0 0.75rem;
+  border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-card);
+  color: var(--text-main);
+  font-size: 0.84rem;
+  font-weight: 600;
+}
+
+.focused-trajectory-flow {
+  flex-wrap: wrap;
+}
+
+.trajectory-node {
+  cursor: pointer;
+  transition: transform 0.14s ease, box-shadow 0.14s ease;
+  position: relative;
+}
+
+.trajectory-node:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.trajectory-node.node-visited {
+  border: 2px solid #16a34a;
+  background-color: rgba(220, 252, 231, 0.35);
+}
+
+[data-theme="dark"] .trajectory-node.node-visited {
+  border-color: #22c55e;
+  background-color: rgba(20, 83, 45, 0.25);
+}
+
+.trajectory-node.node-current-active {
+  border: 2.5px solid #2563eb;
+  background-color: rgba(219, 234, 254, 0.65);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="dark"] .trajectory-node.node-current-active {
+  border-color: #3b82f6;
+  background-color: rgba(30, 58, 138, 0.45);
+}
+
+.trajectory-node.node-current-rejected {
+  border: 2.5px solid #dc2626;
+  background-color: rgba(254, 226, 226, 0.7);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .trajectory-node.node-current-rejected {
+  border-color: #ef4444;
+  background-color: rgba(127, 29, 29, 0.45);
+}
+
+.trajectory-node.node-current-archived {
+  border: 2.5px solid #16a34a;
+  background-color: rgba(220, 252, 231, 0.75);
+  box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15);
+}
+
+[data-theme="dark"] .trajectory-node.node-current-archived {
+  border-color: #22c55e;
+  background-color: rgba(20, 83, 45, 0.48);
+}
+
+.trajectory-node.node-upcoming {
+  border: 1.5px dashed var(--border-color);
+  opacity: 0.78;
+}
+
+.diagram-node-status {
+  display: inline-block;
+  margin-top: 0.35rem;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  width: fit-content;
+}
+
+.diagram-node-status.status-visited {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+
+[data-theme="dark"] .diagram-node-status.status-visited {
+  background-color: rgba(20, 83, 45, 0.65);
+  color: #86efac;
+}
+
+.diagram-node-status.status-current {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.diagram-node-status.status-rejected {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.diagram-node-status.status-archived {
+  background-color: #16a34a;
+  color: #ffffff;
+}
+
+.diagram-node-status.status-upcoming {
+  background-color: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.flow-arrow.arrow-visited {
+  color: #16a34a;
+}
+
+.flow-arrow.arrow-upcoming {
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* All 11 Sections Read-Only Mode */
+.all-sections-readonly-banner {
+  padding: 0.75rem 0.95rem;
+  border-radius: 10px;
+  background-color: var(--kemenag-primary-light);
+  color: var(--text-main);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  margin-bottom: 1rem;
+  border-left: 4px solid var(--kemenag-primary);
+}
+
+.all-sections-diagram-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+.all-sec-diagram-card {
+  padding: 0.95rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--border-color);
+  background-color: var(--bg-card);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.all-sec-diagram-card.has-active-docs {
+  border-color: var(--kemenag-primary);
+  box-shadow: var(--shadow-sm);
+}
+
+.all-sec-diagram-card.is-my-section {
+  background-color: var(--kemenag-primary-light);
+}
+
+.all-sec-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.all-sec-order-tag {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--kemenag-primary);
+}
+
+.all-sec-card-header h4 {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-top: 0.1rem;
+}
+
+.all-sec-card-header p {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.sec-doc-count-badge {
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  background-color: var(--bg-input);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.sec-doc-count-badge.active {
+  background-color: var(--kemenag-primary);
+  color: #ffffff;
+  border-color: var(--kemenag-primary);
+}
+
+.all-sec-empty-note {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0.35rem 0;
+}
+
+.all-sec-docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.all-sec-doc-chip {
+  padding: 0.55rem 0.7rem;
+  border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  cursor: pointer;
+  transition: border-color 0.14s ease;
+}
+
+.all-sec-doc-chip:hover {
+  border-color: var(--kemenag-primary);
+}
+
+.all-sec-doc-chip-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  margin-bottom: 0.25rem;
+}
+
+.all-sec-doc-chip-subject {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 0.2rem;
+}
+
+.all-sec-doc-chip-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.all-sec-doc-chip-meta strong {
+  color: var(--kemenag-primary);
+}
+
+@media (min-width: 768px) {
+  .diagram-doc-selector-bar {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .all-sections-diagram-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .all-sections-diagram-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
