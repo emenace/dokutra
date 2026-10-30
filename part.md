@@ -59,9 +59,9 @@ flowchart LR
    - Dynamic route preview displayed below the dropdown to inform users of the automated transit hops.
 
 ### Monitoring & Evaluation Checklist:
-- [ ] Document ID auto-generates correctly and is non-editable.
-- [ ] Humas Protokol is hidden from manual selection but auto-routed when Kasubbag or Kepala is chosen.
-- [ ] New documents and initial logs (`DIBUAT`) are recorded accurately in SQLite.
+- [x] Document ID auto-generates correctly and is non-editable.
+- [x] Humas Protokol is hidden from manual selection but auto-routed when Kasubbag or Kepala is chosen.
+- [x] New documents and initial logs (`DIBUAT`) are recorded accurately in SQLite.
 
 ---
 

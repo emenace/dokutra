@@ -200,40 +200,143 @@
               </div>
             </div>
             <p class="diagram-helper-caption">
-              💡 <strong>Mode Fokus Aktif:</strong> Hanya menampilkan seksi yang dilalui dokumen. Gunakan tombol <em>"Buat Pelacakan"</em> untuk mulai melacak dokumen baru (Part 3).
+              <strong>Mode Fokus Aktif:</strong> Hanya menampilkan seksi yang dilalui dokumen. Pilih dokumen di bawah atau gunakan menu <em>"Buat Pelacakan"</em> untuk mendaftarkan dokumen baru.
             </p>
           </div>
         </div>
+
+        <!-- Recent Tracked Documents Card (Part 3) -->
+        <div class="card mt-card">
+          <div class="card-header-row">
+            <div>
+              <h3>Daftar Dokumen Terlacak (Seksi Anda)</h3>
+              <p class="card-subtext">
+                Daftar dokumen yang dibuat oleh atau melewati seksi Anda beserta rute pergerakannya.
+              </p>
+            </div>
+            <span id="trackedDocsCountBadge" class="badge-green">0 Dokumen</span>
+          </div>
+          <div id="trackedDocsListContainer" class="tracked-docs-list"></div>
+        </div>
       </div>
 
-      <!-- TAB 2: BUAT PELACAKAN DOKUMEN BARU (Prepared Shell for Part 3) -->
+      <!-- TAB 2: BUAT PELACAKAN DOKUMEN BARU (Part 3 Core View) -->
       <div id="createDocTab" class="tab-pane hidden">
         <div class="card">
           <div class="card-header-row">
-            <h3>Buat Pelacakan Dokumen Baru</h3>
-            <span class="badge-green">Siap untuk Part 3</span>
+            <div>
+              <h3>Buat Pelacakan Dokumen Baru</h3>
+              <p class="card-subtext">
+                Daftarkan dokumen yang akan diteruskan dari seksi Anda ke seksi tujuan.
+              </p>
+            </div>
+            <span class="badge-green" id="createFormOriginBadge">Seksi Pengirim</span>
           </div>
-          <p class="card-subtext">
-            Formulir pendaftaran pelacakan dokumen baru dengan ID otomatis (Tanggal+Waktu+NamaSeksi) dan perutean otomatis Humas Protokol &amp; Kasubbag TU akan diaktifkan pada <strong>Part 3</strong>.
-          </p>
-          <div class="part-preview-list">
-            <div class="preview-field-item">
-              <strong>1. Tanggal Dokumen</strong>
-              <span>Wajib diisi, otomatis memilih tanggal hari ini.</span>
+
+          <div id="createDocAlert" class="alert-box hidden" role="alert"></div>
+          <div id="createDocSuccess" class="success-box hidden" role="status"></div>
+
+          <form id="createDocForm" class="tracker-form" autocomplete="off">
+            <div class="form-grid-2col">
+              <!-- 1. Tanggal Dokumen (DATE, required, auto select today) -->
+              <div class="form-group">
+                <label for="docDateInput">1. Tanggal Dokumen <span class="req-star">*</span></label>
+                <input type="date" id="docDateInput" name="doc_date" required />
+                <small class="field-hint">Otomatis terisi tanggal hari ini (wajib diisi).</small>
+              </div>
+
+              <!-- 2. Nomor Dokumen (String, optional, non-unique) -->
+              <div class="form-group">
+                <label for="docNumberInput">2. Nomor Dokumen <span class="opt-tag">(Opsional)</span></label>
+                <input
+                  type="text"
+                  id="docNumberInput"
+                  name="doc_number"
+                  placeholder="Contoh: B-102/Kk.08.07/Kp.01/10/2026"
+                />
+                <small class="field-hint">Boleh dikosongkan jika belum memiliki nomor surat.</small>
+              </div>
             </div>
-            <div class="preview-field-item">
-              <strong>2. Nomor Dokumen &amp; Hal</strong>
-              <span>Nomor Dokumen opsional, Hal dokumen wajib diisi.</span>
+
+            <div class="form-grid-2col">
+              <!-- 3. Hal (String, required, non-unique) -->
+              <div class="form-group">
+                <label for="docSubjectInput">3. Hal / Perihal Dokumen <span class="req-star">*</span></label>
+                <input
+                  type="text"
+                  id="docSubjectInput"
+                  name="subject"
+                  placeholder="Contoh: Permohonan SK Kenaikan Pangkat / Undangan Rapat"
+                  required
+                />
+              </div>
+
+              <!-- 4. Sifat (Dropdown: Biasa, Penting, Rahasia - required) -->
+              <div class="form-group">
+                <label for="docClassificationSelect">4. Sifat Dokumen <span class="req-star">*</span></label>
+                <select id="docClassificationSelect" name="classification" required>
+                  <option value="Biasa" selected>Biasa</option>
+                  <option value="Penting">Penting</option>
+                  <option value="Rahasia">Rahasia</option>
+                </select>
+              </div>
             </div>
-            <div class="preview-field-item">
-              <strong>3. Sifat Dokumen</strong>
-              <span>Pilihan Dropdown: <code>Biasa</code>, <code>Penting</code>, <code>Rahasia</code>.</span>
+
+            <!-- 5. Keterangan (String, optional, non-unique) -->
+            <div class="form-group">
+              <label for="docDescriptionInput">5. Keterangan <span class="opt-tag">(Opsional)</span></label>
+              <textarea
+                id="docDescriptionInput"
+                name="description"
+                rows="3"
+                placeholder="Tambahkan catatan pengantar atau instruksi dokumen bila ada..."
+              ></textarea>
             </div>
-            <div class="preview-field-item">
-              <strong>4. Teruskan Dokumen Ke (10 Seksi)</strong>
-              <span id="createTabDropdownPreview">Memuat daftar 10 seksi tujuan...</span>
+
+            <div class="form-grid-2col">
+              <!-- 6. ID Dokumen (Auto generate, not fillable, unique: DATE+TIME+SectionName) -->
+              <div class="form-group">
+                <label for="docTrackingIdInput">6. ID Dokumen (Otomatis &amp; Unik)</label>
+                <input
+                  type="text"
+                  id="docTrackingIdInput"
+                  name="doc_tracking_id"
+                  class="input-readonly"
+                  readonly
+                  tabindex="-1"
+                  value="Memuat ID Dokumen..."
+                />
+                <small class="field-hint">Dibuat otomatis dari Tanggal + Waktu + Nama Seksi (Tidak dapat diubah).</small>
+              </div>
+
+              <!-- 7. Teruskan Dokumen Ke (Dropdown: 10 sections excluding Humas Protokol) -->
+              <div class="form-group">
+                <label for="docTargetSectionSelect">7. Teruskan Dokumen Ke <span class="req-star">*</span></label>
+                <select id="docTargetSectionSelect" name="target_section_id" required>
+                  <option value="">-- Pilih Seksi Tujuan --</option>
+                </select>
+                <small class="field-hint">
+                  Humas Protokol tidak ditampilkan karena otomatis terpilih jika tujuan Kasubbag TU / Kepala Kantor.
+                </small>
+              </div>
             </div>
-          </div>
+
+            <!-- Smart Routing Preview Box -->
+            <div id="smartRoutePreviewBox" class="smart-route-preview hidden">
+              <div class="smart-route-header">
+                <svg class="ui-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                <strong>Simulasi Jalur Perutean Dokumen (Smart Routing):</strong>
+              </div>
+              <p id="smartRouteExplanation" class="smart-route-desc"></p>
+              <div id="smartRouteNodesContainer" class="smart-route-chain"></div>
+            </div>
+
+            <div class="form-actions-row">
+              <button type="submit" id="createDocSubmitBtn" class="btn-primary btn-block">
+                Simpan &amp; Teruskan Dokumen Sekarang
+              </button>
+            </div>
+          </form>
         </div>
       </div>
 

@@ -10,6 +10,12 @@ const {
   handleGetAccountsList
 } = require('./src/routes/authRoutes');
 const { handleGetSections } = require('./src/routes/sectionRoutes');
+const {
+  handleGeneratePreviewId,
+  handleGetRoutePreview,
+  handleCreateDocument,
+  handleGetDocuments
+} = require('./src/routes/documentRoutes');
 
 // Initialize SQLite tables and 11 office section seeds on startup
 initializeDatabase();
@@ -99,6 +105,24 @@ function createAppServer() {
       // --- Section Master Routes ---
       if (pathname === '/api/sections' && method === 'GET') {
         return handleGetSections(req, res);
+      }
+
+      // --- Document & Smart Routing Routes (Part 3) ---
+      if (pathname === '/api/documents/generate-id' && method === 'GET') {
+        return handleGeneratePreviewId(req, res);
+      }
+
+      if (pathname === '/api/documents/route-preview' && method === 'GET') {
+        return handleGetRoutePreview(req, res, parsedUrl.searchParams);
+      }
+
+      if (pathname === '/api/documents' && method === 'GET') {
+        return handleGetDocuments(req, res, parsedUrl.searchParams);
+      }
+
+      if (pathname === '/api/documents' && method === 'POST') {
+        const body = await parseJsonBody(req);
+        return handleCreateDocument(req, res, body);
       }
 
       // Unknown API route

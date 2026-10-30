@@ -214,6 +214,10 @@ body {
   margin-bottom: 1.15rem;
 }
 
+.mt-card {
+  margin-top: 1.15rem;
+}
+
 /* ==================== LOGIN CARD ==================== */
 .login-card {
   max-width: 480px;
@@ -337,7 +341,9 @@ body {
 }
 
 .form-group input[type="text"],
-.form-group input[type="password"] {
+.form-group input[type="password"],
+.form-group input[type="date"],
+.form-group select {
   width: 100%;
   height: 46px;
   padding: 0 0.9rem;
@@ -346,11 +352,231 @@ body {
   background-color: var(--bg-input);
   color: var(--text-main);
   font-size: 0.95rem;
+  font-family: inherit;
 }
 
-.form-group input:focus {
+.form-group textarea {
+  width: 100%;
+  padding: 0.75rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
   outline: 2px solid var(--kemenag-primary);
   border-color: transparent;
+}
+
+.input-readonly {
+  background-color: var(--kemenag-primary-light) !important;
+  color: var(--kemenag-primary) !important;
+  font-weight: 800;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  letter-spacing: 0.4px;
+  cursor: not-allowed;
+}
+
+.req-star {
+  color: #dc2626;
+}
+
+.opt-tag {
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.field-hint {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.35;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.form-actions-row {
+  margin-top: 1.25rem;
+}
+
+.success-box {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--border-color);
+}
+
+/* Smart Routing Preview Box */
+.smart-route-preview {
+  margin-top: 0.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--kemenag-primary-light);
+}
+
+.smart-route-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--kemenag-primary);
+  font-size: 0.88rem;
+  margin-bottom: 0.35rem;
+}
+
+.smart-route-desc {
+  font-size: 0.82rem;
+  color: var(--text-main);
+  margin-bottom: 0.75rem;
+}
+
+.smart-route-chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.route-hop-pill {
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-main);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.route-hop-pill.hop-bridge {
+  border-color: var(--kemenag-accent);
+  background-color: var(--kemenag-accent-bg);
+  color: #92400e;
+}
+
+.route-hop-pill.hop-target {
+  border-color: var(--kemenag-primary);
+  color: var(--kemenag-primary);
+}
+
+.route-hop-arrow {
+  font-weight: 800;
+  color: var(--kemenag-primary);
+  font-size: 0.9rem;
+}
+
+/* Tracked Documents List (Dashboard) */
+.tracked-docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.tracked-doc-item {
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.tracked-doc-item:hover,
+.tracked-doc-item.selected-doc {
+  border-color: var(--kemenag-primary);
+}
+
+.tracked-doc-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.doc-id-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--kemenag-primary);
+  background-color: var(--kemenag-primary-light);
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+}
+
+.doc-badges-group {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.sifat-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.18rem 0.5rem;
+  border-radius: 6px;
+}
+
+.sifat-Biasa {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+}
+
+.sifat-Penting {
+  background-color: var(--kemenag-accent-bg);
+  color: #b45309;
+}
+
+.sifat-Rahasia {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.status-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background-color: var(--success-bg);
+  color: var(--success-text);
+}
+
+.tracked-doc-subject {
+  font-size: 0.96rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.tracked-doc-meta {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
 }
 
 .password-field-wrapper {
@@ -1060,10 +1286,17 @@ body {
   }
 
   .form-group input[type="text"],
-  .form-group input[type="password"] {
+  .form-group input[type="password"],
+  .form-group input[type="date"],
+  .form-group select {
     height: 50px;
     font-size: 1rem;
     padding: 0 1rem;
+  }
+
+  .form-grid-2col {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
   }
 
   .btn-primary {

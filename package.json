@@ -7,7 +7,8 @@
     "start": "node server.js",
     "dev": "node --watch server.js",
     "test:part1": "node tests/verify_part1.js",
-    "test:part2": "node tests/verify_part2.js"
+    "test:part2": "node tests/verify_part2.js",
+    "test:part3": "node tests/verify_part3.js"
   },
   "engines": {
     "node": ">=22.5.0"
