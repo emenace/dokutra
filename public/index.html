@@ -148,6 +148,23 @@
         </div>
       </div>
 
+      <!-- BIG INCOMING DOCUMENT NOTIFICATION BANNER (Part 4) -->
+      <div id="bigIncomingAlertBanner" class="big-incoming-banner hidden" role="region" aria-label="Notifikasi Dokumen Masuk">
+        <div class="big-incoming-content">
+          <div class="big-incoming-icon-wrap">
+            <svg class="ui-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+          </div>
+          <div class="big-incoming-text">
+            <span class="big-incoming-tag">PERHATIAN: DOKUMEN MASUK BARU</span>
+            <h3 id="bigIncomingTitle">Ada Dokumen Masuk Menunggu Konfirmasi Anda!</h3>
+            <p id="bigIncomingSubtitle">Klik tombol di samping untuk me-review dan memperbarui status dokumen.</p>
+          </div>
+        </div>
+        <button type="button" id="bigIncomingActionBtn" class="btn-review-incoming">
+          Review Dokumen Masuk Sekarang
+        </button>
+      </div>
+
       <!-- TAB 1: BERANDA & DIAGRAM -->
       <div id="dashboardTab" class="tab-pane active">
         <!-- Summary Metrics Row (Only Active Section shown) -->
@@ -209,12 +226,18 @@
         <div class="card mt-card">
           <div class="card-header-row">
             <div>
-              <h3>Daftar Dokumen Terlacak (Seksi Anda)</h3>
-              <p class="card-subtext">
-                Daftar dokumen yang dibuat oleh atau melewati seksi Anda beserta rute pergerakannya.
+              <h3 id="trackedDocsSectionTitle">Daftar Dokumen Terlacak (Seksi Anda)</h3>
+              <p class="card-subtext" id="trackedDocsSectionSubtitle">
+                Klik pada dokumen untuk melihat detail status terkini dan riwayat perjalanan dokumen.
               </p>
             </div>
-            <span id="trackedDocsCountBadge" class="badge-green">0 Dokumen</span>
+            <div class="tracked-header-actions">
+              <span id="trackedDocsCountBadge" class="badge-green">0 Dokumen</span>
+              <button type="button" id="toggleArchiveDocsBtn" class="btn-archive-toggle">
+                <svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>
+                <span id="toggleArchiveDocsLabel">Arsip (0)</span>
+              </button>
+            </div>
           </div>
           <div id="trackedDocsListContainer" class="tracked-docs-list"></div>
         </div>
@@ -340,23 +363,34 @@
         </div>
       </div>
 
-      <!-- TAB 3: DOKUMEN MASuk (Prepared Shell for Part 4) -->
+      <!-- TAB 3: DOKUMEN MASUK & TINDAK LANJUT (Part 4 Core View) -->
       <div id="inboxTab" class="tab-pane hidden">
+        <!-- Section 1: Incoming Documents Auto-Received at Your Section Awaiting Review -->
+        <div class="card mb-card">
+          <div class="card-header-row">
+            <div>
+              <h3>Dokumen Masuk (Otomatis Diterima &amp; Menunggu)</h3>
+              <p class="card-subtext">
+                Dokumen yang dikirim ke seksi Anda otomatis berstatus <strong>Diterima &amp; Menunggu</strong>. Klik <strong>Review &amp; Tindak Lanjut</strong> untuk memilih tindakan: <em>Tolak</em> atau <em>Teruskan</em>.
+              </p>
+            </div>
+            <span id="inboxPendingCountBadge" class="badge-green">0 Perlu Review</span>
+          </div>
+          <div id="inboxPendingListContainer" class="tracked-docs-list"></div>
+        </div>
+
+        <!-- Section 2: Documents Currently Held at Your Section -->
         <div class="card">
           <div class="card-header-row">
-            <h3>Dokumen Masuk Seksi Anda</h3>
-            <span class="badge-green">Siap untuk Part 4</span>
-          </div>
-          <p class="card-subtext">
-            Daftar dokumen yang dikirim ke seksi Anda beserta aksi review (<strong>Diterima</strong>, <strong>Diproses</strong>, <strong>Diteruskan</strong>) akan diaktifkan pada <strong>Part 4</strong>.
-          </p>
-          <div class="empty-state-box">
-            <div class="empty-icon">
-              <svg class="ui-icon-lg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+            <div>
+              <h3>Dokumen Berada di Seksi Anda</h3>
+              <p class="card-subtext">
+                Dokumen di seksi Anda yang telah ditindaklanjuti. Anda tetap dapat memperbarui catatan atau memilih <strong>Teruskan</strong> ke seksi berikutnya.
+              </p>
             </div>
-            <h4>Belum Ada Dokumen Masuk</h4>
-            <p>Ketika seksi lain meneruskan dokumen ke seksi Anda, notifikasi besar akan tampil di Beranda dan dapat direview di sini.</p>
+            <span id="inboxActiveHeldCountBadge" class="badge-green">0 Di Seksi Ini</span>
           </div>
+          <div id="inboxActiveHeldListContainer" class="tracked-docs-list"></div>
         </div>
       </div>
 
@@ -417,6 +451,167 @@
       </div>
     </section>
   </main>
+
+  <!-- ==================== MODAL: REVIEW & TINDAK LANJUT DOKUMEN MASUK (Part 4) ==================== -->
+  <div id="reviewModalOverlay" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="doc-id-mono" id="reviewModalDocId">ID-DOKUMEN</span>
+          <h3 id="reviewModalTitle">Review &amp; Tindak Lanjut Dokumen</h3>
+        </div>
+        <button type="button" id="closeReviewModalBtn" class="modal-close-btn" aria-label="Tutup">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Document Summary Box -->
+        <div class="review-doc-summary">
+          <div class="review-summary-row">
+            <span>Hal / Perihal:</span>
+            <strong id="reviewModalSubject">-</strong>
+          </div>
+          <div class="review-summary-grid">
+            <div>
+              <span>Tanggal Dokumen:</span>
+              <strong id="reviewModalDate">-</strong>
+            </div>
+            <div>
+              <span>Nomor Dokumen:</span>
+              <strong id="reviewModalNumber">-</strong>
+            </div>
+            <div>
+              <span>Sifat:</span>
+              <strong id="reviewModalClassification">-</strong>
+            </div>
+            <div>
+              <span>Seksi Pembuat Awal:</span>
+              <strong id="reviewModalOrigin">-</strong>
+            </div>
+            <div>
+              <span>Lokasi Saat Ini:</span>
+              <strong id="reviewModalCurrentLoc">-</strong>
+            </div>
+            <div>
+              <span>Tujuan Akhir Rute:</span>
+              <strong id="reviewModalFinalTarget">-</strong>
+            </div>
+          </div>
+          <div class="review-summary-row mt-xs" id="reviewModalDescRow">
+            <span>Keterangan Awal:</span>
+            <p id="reviewModalInitialDesc" class="review-desc-text">-</p>
+          </div>
+        </div>
+
+        <!-- Audit Trail / Riwayat Perjalanan -->
+        <div class="review-logs-box">
+          <h4>Riwayat Perjalanan Dokumen:</h4>
+          <div id="reviewModalLogsList" class="review-logs-list"></div>
+        </div>
+
+        <div id="reviewModalAlert" class="alert-box hidden" role="alert"></div>
+
+        <!-- Review Action Form -->
+        <form id="reviewActionForm" autocomplete="off">
+          <input type="hidden" id="reviewDocDbIdInput" value="" />
+
+          <div class="form-group">
+            <label>Pilih Status Tindak Lanjut <span class="req-star">*</span></label>
+            <div class="status-choice-grid">
+              <!-- Option 1: Tolak (Red) -->
+              <label class="status-radio-card status-card-red" id="statusCardTolak">
+                <input type="radio" name="review_action_status" value="DITOLAK" />
+                <div class="status-radio-body">
+                  <strong>Tolak</strong>
+                  <span>Dokumen ditolak / dikembalikan karena belum memenuhi syarat atau perlu revisi.</span>
+                </div>
+              </label>
+
+              <!-- Option 2: Standard Teruskan (Blue) -->
+              <label class="status-radio-card status-card-blue" id="statusCardTeruskan">
+                <input type="radio" name="review_action_status" value="TERUSKAN" checked />
+                <div class="status-radio-body">
+                  <strong id="statusCardTeruskanTitle">Teruskan</strong>
+                  <span id="statusCardTeruskanDesc">Teruskan dokumen ini ke seksi berikutnya (otomatis Diterima &amp; Menunggu di seksi tujuan).</span>
+                </div>
+              </label>
+
+              <!-- Option 3 (Kasubbag & Kepala only): Paraf/Tandatangan dan Teruskan ke Protokol (Blue, auto-selects Humas Protokol & hides dropdown) -->
+              <label class="status-radio-card status-card-blue hidden" id="statusCardTeruskanProtokol">
+                <input type="radio" name="review_action_status" value="TERUSKAN_PROTOKOL" />
+                <div class="status-radio-body">
+                  <strong id="statusCardProtokolTitle">Paraf / Tandatangan dan Teruskan ke Protokol</strong>
+                  <span id="statusCardProtokolDesc">Otomatis diteruskan ke Humas Protokol tanpa perlu memilih dropdown.</span>
+                </div>
+              </label>
+
+              <!-- Option 4 (Humas Protokol when receiving from Kasubbag/Kepala): Teruskan ke Seksi (Blue, auto-selects source section & hides dropdown) -->
+              <label class="status-radio-card status-card-blue hidden" id="statusCardTeruskanSeksi">
+                <input type="radio" name="review_action_status" value="TERUSKAN_SEKSI" />
+                <div class="status-radio-body">
+                  <strong id="statusCardSeksiTitle">Teruskan ke Seksi</strong>
+                  <span id="statusCardSeksiDesc">Otomatis diteruskan kembali ke seksi asal dokumen tanpa dropdown.</span>
+                </div>
+              </label>
+
+              <!-- Option 5 (Origin Section when receiving signed document back from Humas): ONLY "Selesai" (Green, marks as archive) -->
+              <label class="status-radio-card status-card-green hidden" id="statusCardSelesai">
+                <input type="radio" name="review_action_status" value="SELESAI" />
+                <div class="status-radio-body">
+                  <strong id="statusCardSelesaiTitle">Selesai</strong>
+                  <span id="statusCardSelesaiDesc">Dokumen telah selesai ditandatangani dan kembali ke seksi asal. Tandai Selesai &amp; masukkan ke Arsip.</span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Conditional Dropdown when "Diteruskan" is selected -->
+          <div id="reviewForwardTargetGroup" class="form-group hidden">
+            <label for="reviewTargetSectionSelect">Teruskan Dokumen Ke <span class="req-star">*</span></label>
+            <select id="reviewTargetSectionSelect" name="target_section_id">
+              <option value="">-- Pilih Seksi Tujuan --</option>
+            </select>
+            <div id="reviewPlannedRouteHint" class="smart-route-preview hidden"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="reviewNoteInput">Keterangan / Catatan Tindak Lanjut <span class="opt-tag">(Opsional)</span></label>
+            <textarea
+              id="reviewNoteInput"
+              rows="2"
+              placeholder="Contoh: Berkas lengkap dan sudah diparaf..."
+            ></textarea>
+          </div>
+
+          <div class="modal-footer-btns">
+            <button type="button" id="cancelReviewModalBtn" class="btn-outline-sm">Batal</button>
+            <button type="submit" id="submitReviewActionBtn" class="btn-primary">
+              Simpan Status Dokumen
+            </button>
+          </div>
+        </form>
+
+        <!-- Read-Only Status Footer (When viewing in-progress or archived document from Daftar Dokumen Terlacak) -->
+        <div id="reviewReadOnlyBox" class="review-readonly-box hidden">
+          <div id="reviewReadOnlyStatusInfo" class="review-readonly-info"></div>
+          <div class="modal-footer-btns">
+            <button type="button" id="closeReadOnlyModalBtn" class="btn-primary">Tutup</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SMALL POPUP NOTIFICATION MODAL (Success / Error Feedback) ==================== -->
+  <div id="popupFeedbackOverlay" class="modal-overlay popup-feedback-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="popupFeedbackTitle">
+    <div id="popupFeedbackCard" class="popup-feedback-card">
+      <div id="popupFeedbackIconBox" class="popup-feedback-icon-box"></div>
+      <h4 id="popupFeedbackTitle" class="popup-feedback-title">Berhasil!</h4>
+      <div id="popupFeedbackMessage" class="popup-feedback-message"></div>
+      <button type="button" id="popupFeedbackCloseBtn" class="btn-primary btn-block popup-feedback-btn">
+        Tutup / Mengerti
+      </button>
+    </div>
+  </div>
 
   <!-- ==================== MOBILE BOTTOM NAVIGATION BAR (Phone Webview) ==================== -->
   <nav id="mobileBottomNav" class="mobile-bottom-nav hidden" aria-label="Navigasi Bawah">

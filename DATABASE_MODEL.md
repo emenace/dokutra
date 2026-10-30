@@ -48,10 +48,10 @@ erDiagram
         string classification "Biasa | Penting | Rahasia"
         string description "Initial note/keterangan"
         int origin_section_id FK
-        int current_section_id FK "Current physical location on diagram"
-        int pending_section_id FK "Target section awaiting review"
+        int current_section_id FK "Current physical location on diagram (Auto-received)"
+        int pending_section_id FK "Target section awaiting review action"
         int final_target_section_id FK "Ultimate target section"
-        string current_status "DITERUSKAN | DITERIMA | DIPROSES"
+        string current_status "DITERIMA | MENUNGGU | DITOLAK | DITERUSKAN | DIPROSES | SELESAI"
         string planned_route_json "JSON array of automated section route"
         int created_by_user_id FK
         datetime created_at
@@ -63,7 +63,7 @@ erDiagram
         int document_id FK
         int from_section_id FK
         int to_section_id FK
-        string action_status "DIBUAT | DITERIMA | DIPROSES | DITERUSKAN"
+        string action_status "DIBUAT | DITERIMA | MENUNGGU | DITOLAK | DITERUSKAN | DIPROSES | SELESAI"
         string note "Reviewer note / Keterangan"
         int action_by_user_id FK
         datetime created_at
@@ -144,10 +144,10 @@ CREATE TABLE IF NOT EXISTS documents (
     classification TEXT NOT NULL CHECK(classification IN ('Biasa', 'Penting', 'Rahasia')),
     description TEXT DEFAULT '',          -- Additional note
     origin_section_id INTEGER NOT NULL,   -- Originating section
-    current_section_id INTEGER NOT NULL,  -- Current physical location on diagram
-    pending_section_id INTEGER,           -- Target section when status is DITERUSKAN
+    current_section_id INTEGER NOT NULL,  -- Current physical location on diagram (auto-received on forward)
+    pending_section_id INTEGER,           -- Target section awaiting review in Inbox
     final_target_section_id INTEGER,      -- Ultimate intended destination
-    current_status TEXT NOT NULL CHECK(current_status IN ('DITERUSKAN', 'DITERIMA', 'DIPROSES')),
+    current_status TEXT NOT NULL CHECK(current_status IN ('DITERUSKAN', 'DITERIMA', 'DIPROSES', 'MENUNGGU', 'DITOLAK')),
     planned_route_json TEXT DEFAULT '[]', -- JSON array of pending auto-route hops, e.g. ["KASUBBAG", "KEPALA"]
     created_by_user_id INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -171,7 +171,7 @@ CREATE TABLE IF NOT EXISTS document_logs (
     document_id INTEGER NOT NULL,
     from_section_id INTEGER NOT NULL,
     to_section_id INTEGER NOT NULL,
-    action_status TEXT NOT NULL CHECK(action_status IN ('DIBUAT', 'DITERIMA', 'DIPROSES', 'DITERUSKAN')),
+    action_status TEXT NOT NULL CHECK(action_status IN ('DIBUAT', 'DITERIMA', 'DIPROSES', 'DITERUSKAN', 'MENUNGGU', 'DITOLAK')),
     note TEXT DEFAULT '',
     action_by_user_id INTEGER NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -197,11 +197,11 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 ---
 
-## 3. Location State Transition Matrix
+## 3. Location State Transition Matrix (Auto-Receive & Review Actions)
 
 | Event | `current_section_id` (Diagram Location) | `pending_section_id` (Inbox Alert) | `current_status` | UI Visual Effect |
 | :--- | :--- | :--- | :--- | :--- |
-| **New Document Created by Section A $\rightarrow$ Section B** | `Section A` | `Section B` | `DITERUSKAN` | Section B receives Big Notification Banner. Diagram shows transit from A to B. |
-| **Section B clicks Review $\rightarrow$ selects `Diterima`** | **`Section B`** *(Moved!)* | `NULL` | `DITERIMA` | Physical location node **moves to Section B** on diagram. |
-| **Section B updates status $\rightarrow$ selects `Diproses`** | **`Section B`** | `NULL` | `DIPROSES` | Document stays at Section B with "Diproses" active badge. |
-| **Section B selects `Diteriman` $\rightarrow$ forwards to `KEPALA`** | `Section B` | `HUMAS` *(Auto-bridge)* | `DITERUSKAN` | `planned_route_json` contains `["KASUBBAG", "KEPALA"]`. Humas receives Big Notification Banner. |
+| **New Document Created by Section A $\rightarrow$ Section B** | **`Section B`** *(Auto-Received!)* | `Section B` | `DITERIMA` | Automatically logs `DIBUAT`, `DITERUSKAN`, and `DITERIMA`. Section B receives Big Notification Banner to review. |
+| **Section B clicks Review $\rightarrow$ selects `Menunggu`** | **`Section B`** | `NULL` | `MENUNGGU` | Document stays at Section B with `MENUNGGU` badge; incoming alert cleared. |
+| **Section B clicks Review $\rightarrow$ selects `Ditolak`** | **`Section B`** | `NULL` | `DITOLAK` | Document stays at Section B with `DITOLAK` badge; incoming alert cleared. |
+| **Section B clicks Review $\rightarrow$ selects `Teruskan` to `KEPALA`** | **`HUMAS`** *(Auto-Received!)* | `HUMAS` *(Auto-bridge)* | `DITERIMA` | `planned_route_json` contains `["KASUBBAG", "KEPALA"]`. Document is auto-received at Humas and triggers Humas's Big Notification Banner. |

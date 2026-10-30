@@ -9,7 +9,7 @@ This document serves as the primary technical specification and operational inst
 1. **User Interface (UI):** **100% Indonesian Language**.
    - All labels, buttons, dialogs, status badges, notifications, error messages, and form placeholders displayed to end users must be in clear, polite, standard Indonesian.
 2. **Database Models & Enums:** **Indonesian Domain Terms**.
-   - Model table names, status enums (`DIBUAT`, `DITERUSKAN`, `DITERIMA`, `DIPROSES`), classifications (`Biasa`, `Penting`, `Rahasia`), and section names follow the official office vocabulary.
+   - Model table names, status enums (`DIBUAT`, `DITERUSKAN`, `DITERIMA`, `MENUNGGU`, `DITOLAK`), classifications (`Biasa`, `Penting`, `Rahasia`), and section names follow the official office vocabulary.
 3. **Backend & Architecture Code:** **100% English**.
    - All code logic, variable names, function names, classes, internal comments, route names, controllers, and documentation markdown files must be written in English.
 4. **Target Platform:** **Mobile-First / Phone Webview**.
@@ -73,9 +73,16 @@ The routing engine manages the path when forwarding documents to management (`KA
    - Sections not involved in the document flow are omitted from the main diagram to preserve screen real estate on mobile devices.
 2. **All Sections Mode (Read-Only Toggle):**
    - Clicking "Tampilkan Semua Seksi" displays a full view of all 11 sections with their currently stationed documents in read-only mode.
-3. **Physical Location Updates:**
-   - While a document is in transit (`status = 'DITERUSKAN'`), the recipient section sees the **Big Notification Banner**.
-   - As soon as the recipient clicks Review and selects **`Diterima`** or **`Diproses`**, the document's physical node on the diagram **moves immediately to that section**.
+3. **Auto-Receive (`Diterima & Menunggu`), Colored Selections & Role-Specific Review Actions:**
+   - Whenever a document is created or forwarded to a destination section, it is **automatically `Diterima & Menunggu`** at that target section (`Menunggu` is disabled from manual selection across all sections).
+   - **Log History Colorization:** Red for `Tolak` (`DITOLAK`), Green for `Diterima & Proses` (`DIBUAT`, `DITERIMA`), and Blue for `Teruskan` (`DITERUSKAN`).
+   - **Review Selection Cards (Colored: Red for `Tolak`, Blue for `Teruskan`):**
+     - Standard Sections: **2 selections** (`Tolak`, `Teruskan` with dropdown).
+     - `KASUBBAG`: **3 selections** (`Tolak`, `Teruskan` with dropdown, and `Paraf / Tandatangan dan Teruskan ke Protokol` which auto-selects `Humas Protokol` and hides the dropdown).
+     - `KEPALA`: **2 selections** (`Tolak` and `Tandatangan dan Teruskan ke Protokol` which auto-selects `Humas Protokol` and hides the dropdown).
+     - `HUMAS` (when receiving a document back from `KASUBBAG` or `KEPALA`): **2 selections** (`Tolak` and `Teruskan ke Seksi` which auto-selects the source section without dropdown).
+     - **Source Section (when receiving a signed document back from `HUMAS`):** **Only 1 selection**: **`Selesai`** (Green), which marks the document as `SELESAI` (archived) and moves it to the **`Arsip`** view on `Daftar Dokumen Terlacak` on the Dashboard.
+   - **Clickable `Daftar Dokumen Terlacak` & `Arsip` Toggle:** Clicking any document in `Daftar Dokumen Terlacak` opens the detail modal showing its current status and colorized `Riwayat Perjalanan Dokumen` history.
 
 ---
 

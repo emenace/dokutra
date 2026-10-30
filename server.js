@@ -14,7 +14,9 @@ const {
   handleGeneratePreviewId,
   handleGetRoutePreview,
   handleCreateDocument,
-  handleGetDocuments
+  handleGetDocuments,
+  handleGetInboxDocuments,
+  handleReviewDocument
 } = require('./src/routes/documentRoutes');
 
 // Initialize SQLite tables and 11 office section seeds on startup
@@ -123,6 +125,17 @@ function createAppServer() {
       if (pathname === '/api/documents' && method === 'POST') {
         const body = await parseJsonBody(req);
         return handleCreateDocument(req, res, body);
+      }
+
+      // --- Incoming Document Inbox & Review Routes (Part 4) ---
+      if (pathname === '/api/documents/inbox' && method === 'GET') {
+        return handleGetInboxDocuments(req, res);
+      }
+
+      const reviewMatch = pathname.match(/^\/api\/documents\/(\d+)\/review$/);
+      if (reviewMatch && method === 'POST') {
+        const body = await parseJsonBody(req);
+        return handleReviewDocument(req, res, reviewMatch[1], body);
       }
 
       // Unknown API route

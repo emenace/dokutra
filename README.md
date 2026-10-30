@@ -15,7 +15,7 @@ The application features a responsive, mobile-first design tailored for **phone 
    - 6-hour persistent HTTP-only cookie sessions so staff can work an entire shift without re-authenticating.
 
 2. **Indonesian UI & Office Conventions:**
-   - The user-facing interface, status labels, and database records use standard Indonesian terminology (`Diterima`, `Diproses`, `Diteruskan`, `Biasa`, `Penting`, `Rahasia`).
+   - The user-facing interface, status labels, and database records use standard Indonesian terminology (`Diterima`, `Menunggu`, `Ditolak`, `Diteruskan`, `Biasa`, `Penting`, `Rahasia`).
    - The backend codebase, API architecture, and developer documentation are written in clean English.
 
 3. **Smart Routing Engine:**
@@ -27,10 +27,10 @@ The application features a responsive, mobile-first design tailored for **phone 
    - **Focused View (Default):** Displays only the sections involved in the active document's path (origin, past stops, current location, and scheduled destinations), keeping mobile screens uncluttered.
    - **All Sections View (Read-Only):** A one-click toggle to inspect all 11 sections and view all documents across the entire office.
 
-5. **Big Incoming Document Notification:**
-   - A prominent notification card appears at the top of the dashboard whenever new documents arrive for the logged-in section.
-   - One-click review with options to set notes and update status to **Diterima**, **Diproses**, or **Diteruskan**.
-   - Setting status to **Diterima** or **Diproses** officially relocates the document on the diagram to the receiving section.
+5. **Auto-Receive & Big Incoming Document Notification:**
+   - Documents forwarded to a section are automatically received (`Diterima`) at the destination section.
+   - A prominent notification card appears at the top of the dashboard whenever incoming documents are awaiting review at the logged-in section.
+   - One-click review with a slim single-line `Riwayat Perjalanan Dokumen` log list and options to set notes and update status to **Ditolak**, **Menunggu**, or **Teruskan**.
 
 ---
 

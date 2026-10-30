@@ -125,12 +125,13 @@ async function runPart3Verification() {
   assert.strictEqual(createRes.statusCode, 201, 'Document creation should return 201 Created');
   const createdDoc = createRes.body.document;
   assert.strictEqual(createdDoc.origin_section_code, 'PAPKI');
-  assert.strictEqual(createdDoc.current_section_code, 'PAPKI', 'Physical location stays at PAPKI until received');
-  assert.strictEqual(createdDoc.pending_section_code, 'HUMAS', 'Immediate pending recipient must be HUMAS');
+  assert.strictEqual(createdDoc.current_section_code, 'HUMAS', 'Auto-received at immediate destination HUMAS');
+  assert.strictEqual(createdDoc.current_status, 'DITERIMA', 'Auto-received status must be DITERIMA');
+  assert.strictEqual(createdDoc.pending_section_code, 'HUMAS', 'Immediate pending recipient for review must be HUMAS');
   assert.strictEqual(createdDoc.final_target_section_code, 'KEPALA', 'Final target must be KEPALA');
   assert.deepStrictEqual(createdDoc.planned_route, ['KASUBBAG', 'KEPALA']);
-  assert.strictEqual(createdDoc.logs.length, 2, 'Should record DIBUAT and initial DITERUSKAN logs');
-  console.log('[PASS] Document creation & SQLite audit trail (DIBUAT + DITERUSKAN) verified.');
+  assert.strictEqual(createdDoc.logs.length, 3, 'Should record DIBUAT, DITERUSKAN, and auto-receive DITERIMA & MENUNGGU logs');
+  console.log('[PASS] Document creation, Auto-Receive & SQLite audit trail (DIBUAT + DITERUSKAN + DITERIMA & MENUNGGU) verified.');
 
   // 8. Test Fetching Documents list via GET /api/documents
   const listRes = invokeHandler(handleGetDocuments, {

@@ -79,7 +79,7 @@ function initializeDatabase() {
       current_section_id INTEGER NOT NULL,
       pending_section_id INTEGER,
       final_target_section_id INTEGER,
-      current_status TEXT NOT NULL CHECK(current_status IN ('DITERUSKAN', 'DITERIMA', 'DIPROSES')),
+      current_status TEXT NOT NULL CHECK(current_status IN ('DITERIMA', 'MENUNGGU', 'DITOLAK', 'DITERUSKAN', 'DIPROSES', 'SELESAI')),
       planned_route_json TEXT DEFAULT '[]',
       created_by_user_id INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -96,7 +96,7 @@ function initializeDatabase() {
       document_id INTEGER NOT NULL,
       from_section_id INTEGER NOT NULL,
       to_section_id INTEGER NOT NULL,
-      action_status TEXT NOT NULL CHECK(action_status IN ('DIBUAT', 'DITERIMA', 'DIPROSES', 'DITERUSKAN')),
+      action_status TEXT NOT NULL CHECK(action_status IN ('DIBUAT', 'DITERIMA', 'MENUNGGU', 'DITOLAK', 'DITERUSKAN', 'DIPROSES', 'SELESAI')),
       note TEXT DEFAULT '',
       action_by_user_id INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -115,6 +115,70 @@ function initializeDatabase() {
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     );
   `);
+
+  // Automatically migrate existing SQLite tables if they have the old CHECK constraint without SELESAI
+  const docTableSql = db
+    .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='documents'")
+    .get();
+  if (docTableSql && docTableSql.sql && !docTableSql.sql.includes('SELESAI')) {
+    db.exec('PRAGMA foreign_keys = OFF;');
+    db.exec('BEGIN TRANSACTION;');
+    try {
+      db.exec(`
+        CREATE TABLE documents_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          doc_tracking_id TEXT NOT NULL UNIQUE,
+          doc_date TEXT NOT NULL,
+          doc_number TEXT DEFAULT '',
+          subject TEXT NOT NULL,
+          classification TEXT NOT NULL CHECK(classification IN ('Biasa', 'Penting', 'Rahasia')),
+          description TEXT DEFAULT '',
+          origin_section_id INTEGER NOT NULL,
+          current_section_id INTEGER NOT NULL,
+          pending_section_id INTEGER,
+          final_target_section_id INTEGER,
+          current_status TEXT NOT NULL CHECK(current_status IN ('DITERIMA', 'MENUNGGU', 'DITOLAK', 'DITERUSKAN', 'DIPROSES', 'SELESAI')),
+          planned_route_json TEXT DEFAULT '[]',
+          created_by_user_id INTEGER NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (origin_section_id) REFERENCES sections(id),
+          FOREIGN KEY (current_section_id) REFERENCES sections(id),
+          FOREIGN KEY (pending_section_id) REFERENCES sections(id),
+          FOREIGN KEY (final_target_section_id) REFERENCES sections(id),
+          FOREIGN KEY (created_by_user_id) REFERENCES users(id)
+        );
+        INSERT INTO documents_new SELECT * FROM documents;
+        DROP TABLE documents;
+        ALTER TABLE documents_new RENAME TO documents;
+
+        CREATE TABLE document_logs_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          document_id INTEGER NOT NULL,
+          from_section_id INTEGER NOT NULL,
+          to_section_id INTEGER NOT NULL,
+          action_status TEXT NOT NULL CHECK(action_status IN ('DIBUAT', 'DITERIMA', 'MENUNGGU', 'DITOLAK', 'DITERUSKAN', 'DIPROSES', 'SELESAI')),
+          note TEXT DEFAULT '',
+          action_by_user_id INTEGER NOT NULL,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+          FOREIGN KEY (from_section_id) REFERENCES sections(id),
+          FOREIGN KEY (to_section_id) REFERENCES sections(id),
+          FOREIGN KEY (action_by_user_id) REFERENCES users(id)
+        );
+        INSERT INTO document_logs_new SELECT * FROM document_logs;
+        DROP TABLE document_logs;
+        ALTER TABLE document_logs_new RENAME TO document_logs;
+      `);
+      db.exec('COMMIT;');
+      console.log('[Database] Successfully migrated documents and document_logs schema for Auto-Receive & [Ditolak, Menunggu, Teruskan].');
+    } catch (err) {
+      db.exec('ROLLBACK;');
+      console.error('[Database] Schema migration failed:', err);
+    } finally {
+      db.exec('PRAGMA foreign_keys = ON;');
+    }
+  }
 
   // Seed the 11 Official Sections of Kantor Kementerian Agama Kota Metro
   const existingSectionsCount = db.prepare('SELECT COUNT(*) as count FROM sections').get().count;

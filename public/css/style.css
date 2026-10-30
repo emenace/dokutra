@@ -1440,3 +1440,600 @@ body {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+/* ==================== PART 4: BIG INCOMING NOTIFICATION BANNER & REVIEW MODAL ==================== */
+.big-incoming-banner {
+  background: linear-gradient(135deg, #b45309, #d97706);
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.15rem;
+  box-shadow: 0 8px 24px rgba(180, 83, 9, 0.28);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border: 2px solid #fbbf24;
+}
+
+.big-incoming-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.big-incoming-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.big-incoming-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  background-color: rgba(0, 0, 0, 0.25);
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.3rem;
+}
+
+.big-incoming-text h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.big-incoming-text p {
+  font-size: 0.84rem;
+  opacity: 0.95;
+  margin-top: 0.2rem;
+}
+
+.btn-review-incoming {
+  min-height: 46px;
+  padding: 0.65rem 1.25rem;
+  border-radius: 12px;
+  border: none;
+  background-color: #ffffff;
+  color: #92400e;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.btn-review-incoming:hover {
+  background-color: #fef3c7;
+}
+
+.doc-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.6rem;
+  border-top: 1px dashed var(--border-color);
+}
+
+.btn-review-card {
+  height: 38px;
+  padding: 0 0.95rem;
+  border-radius: 9px;
+  border: none;
+  background-color: var(--kemenag-primary);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal Overlay & Dialog */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 250;
+  background-color: rgba(13, 23, 18, 0.68);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modal-header {
+  padding: 1.1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.modal-header h3 {
+  font-size: 1.08rem;
+  font-weight: 800;
+  margin-top: 0.3rem;
+}
+
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-main);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+}
+
+.review-doc-summary {
+  padding: 1rem;
+  border-radius: 12px;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  margin-bottom: 1rem;
+}
+
+.review-summary-row {
+  margin-bottom: 0.65rem;
+}
+
+.review-summary-row span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.review-summary-row strong {
+  font-size: 1rem;
+  color: var(--text-main);
+}
+
+.review-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+}
+
+.review-summary-grid span {
+  display: block;
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.review-summary-grid strong {
+  font-size: 0.86rem;
+  color: var(--text-main);
+}
+
+.mt-xs {
+  margin-top: 0.65rem;
+  margin-bottom: 0;
+}
+
+.review-desc-text {
+  font-size: 0.84rem;
+  color: var(--text-main);
+  margin-top: 0.15rem;
+}
+
+.review-logs-box {
+  margin-bottom: 1rem;
+}
+
+.review-logs-box h4 {
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+  color: var(--text-muted);
+}
+
+.review-logs-list {
+  display: block;
+  max-height: 190px;
+  overflow-y: auto;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-input);
+}
+
+.review-log-item {
+  padding: 0.22rem 0;
+  border-bottom: 1px dashed var(--border-color);
+  background: transparent;
+  font-size: 0.76rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-log-item:last-child {
+  border-bottom: none;
+}
+
+.review-log-item strong {
+  display: inline;
+  color: var(--kemenag-primary);
+  font-weight: 700;
+  margin-right: 0.3rem;
+}
+
+.review-log-item span {
+  display: inline;
+  color: var(--text-muted);
+}
+
+/* Colorization for Simple Log History: Red (Tolak), Green (Diterima & Proses), Blue (Teruskan) */
+.review-log-item.log-red strong {
+  color: #dc2626;
+}
+
+.review-log-item.log-red span {
+  color: #b91c1c;
+}
+
+[data-theme="dark"] .review-log-item.log-red strong {
+  color: #f87171;
+}
+
+[data-theme="dark"] .review-log-item.log-red span {
+  color: #fca5a5;
+}
+
+.review-log-item.log-green strong {
+  color: #15803d;
+}
+
+.review-log-item.log-green span {
+  color: #166534;
+}
+
+[data-theme="dark"] .review-log-item.log-green strong {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .review-log-item.log-green span {
+  color: #bbf7d0;
+}
+
+.review-log-item.log-blue strong {
+  color: #1d4ed8;
+}
+
+.review-log-item.log-blue span {
+  color: #1e40af;
+}
+
+[data-theme="dark"] .review-log-item.log-blue strong {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .review-log-item.log-blue span {
+  color: #bfdbfe;
+}
+
+.status-choice-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.status-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.8rem 0.95rem;
+  border-radius: 12px;
+  border: 2px solid var(--border-color);
+  background-color: var(--bg-input);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* Red Colored Selection Card (Tolak) */
+.status-radio-card.status-card-red {
+  border-color: rgba(220, 38, 38, 0.35);
+  background-color: rgba(254, 226, 226, 0.32);
+}
+
+.status-radio-card.status-card-red .status-radio-body strong {
+  color: #dc2626;
+}
+
+.status-radio-card.status-card-red input[type="radio"] {
+  accent-color: #dc2626;
+}
+
+.status-radio-card.status-card-red:has(input:checked) {
+  border-color: #dc2626;
+  background-color: rgba(254, 226, 226, 0.82);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-red {
+  border-color: rgba(239, 68, 68, 0.4);
+  background-color: rgba(127, 29, 29, 0.22);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-red .status-radio-body strong {
+  color: #f87171;
+}
+
+[data-theme="dark"] .status-radio-card.status-card-red:has(input:checked) {
+  border-color: #ef4444;
+  background-color: rgba(127, 29, 29, 0.48);
+}
+
+/* Blue Colored Selection Card (Teruskan / Teruskan ke Protokol / Teruskan ke Seksi) */
+.status-radio-card.status-card-blue {
+  border-color: rgba(37, 99, 235, 0.35);
+  background-color: rgba(219, 234, 254, 0.32);
+}
+
+.status-radio-card.status-card-blue .status-radio-body strong {
+  color: #1d4ed8;
+}
+
+.status-radio-card.status-card-blue input[type="radio"] {
+  accent-color: #2563eb;
+}
+
+.status-radio-card.status-card-blue:has(input:checked) {
+  border-color: #2563eb;
+  background-color: rgba(219, 234, 254, 0.85);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-blue {
+  border-color: rgba(59, 130, 246, 0.4);
+  background-color: rgba(30, 58, 138, 0.22);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-blue .status-radio-body strong {
+  color: #60a5fa;
+}
+
+[data-theme="dark"] .status-radio-card.status-card-blue:has(input:checked) {
+  border-color: #3b82f6;
+  background-color: rgba(30, 58, 138, 0.48);
+}
+
+/* Green Colored Selection Card (Selesai & Arsip) */
+.status-radio-card.status-card-green {
+  border-color: rgba(22, 163, 74, 0.4);
+  background-color: rgba(220, 252, 231, 0.38);
+}
+
+.status-radio-card.status-card-green .status-radio-body strong {
+  color: #15803d;
+}
+
+.status-radio-card.status-card-green input[type="radio"] {
+  accent-color: #16a34a;
+}
+
+.status-radio-card.status-card-green:has(input:checked) {
+  border-color: #16a34a;
+  background-color: rgba(220, 252, 231, 0.9);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-green {
+  border-color: rgba(34, 197, 94, 0.45);
+  background-color: rgba(20, 83, 45, 0.25);
+}
+
+[data-theme="dark"] .status-radio-card.status-card-green .status-radio-body strong {
+  color: #4ade80;
+}
+
+[data-theme="dark"] .status-radio-card.status-card-green:has(input:checked) {
+  border-color: #22c55e;
+  background-color: rgba(20, 83, 45, 0.52);
+}
+
+.tracked-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-archive-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  height: 34px;
+  padding: 0 0.8rem;
+  border-radius: 999px;
+  border: 1.5px solid var(--kemenag-primary);
+  background-color: transparent;
+  color: var(--kemenag-primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-archive-toggle:hover,
+.btn-archive-toggle.active {
+  background-color: var(--kemenag-primary);
+  color: #ffffff;
+}
+
+.tracked-doc-item.clickable-card {
+  cursor: pointer;
+  transition: transform 0.12s ease, border-color 0.12s ease;
+}
+
+.tracked-doc-item.clickable-card:hover {
+  border-color: var(--kemenag-primary);
+}
+
+.review-readonly-box {
+  margin-top: 0.5rem;
+}
+
+.review-readonly-info {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background-color: var(--kemenag-primary-light);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.status-radio-card input[type="radio"] {
+  margin-top: 0.25rem;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.status-radio-body strong {
+  display: block;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.status-radio-body span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.1rem;
+}
+
+.modal-footer-btns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.modal-footer-btns .btn-primary {
+  padding: 0 1.35rem;
+}
+
+@media (min-width: 768px) {
+  .big-incoming-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+  }
+
+  .big-incoming-text h3 {
+    font-size: 1.28rem;
+  }
+
+  .review-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ==================== SMALL POPUP NOTIFICATION MODAL (Success / Error Feedback) ==================== */
+.popup-feedback-overlay {
+  z-index: 300;
+}
+
+.popup-feedback-card {
+  width: 100%;
+  max-width: 420px;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+  padding: 1.5rem 1.35rem;
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  animation: popupScaleIn 0.16s ease-out;
+}
+
+@keyframes popupScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.popup-feedback-icon-box {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 0.9rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-feedback-card.is-success .popup-feedback-icon-box {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+}
+
+.popup-feedback-card.is-error .popup-feedback-icon-box {
+  background-color: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.popup-feedback-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+}
+
+.popup-feedback-message {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 1.25rem;
+}
+
+.popup-feedback-message code {
+  display: inline-block;
+  margin: 0.25rem 0;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background-color: var(--kemenag-primary-light);
+  color: var(--kemenag-primary);
+  font-weight: 800;
+  font-size: 0.88rem;
+}
+
+.popup-feedback-btn {
+  height: 44px;
+}

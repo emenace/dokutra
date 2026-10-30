@@ -88,7 +88,7 @@ dokutra/
 
 ---
 
-## 4. Smart Routing Engine Flow
+## 4. Smart Routing Engine & Auto-Receive Flow
 
 ```mermaid
 sequenceDiagram
@@ -99,17 +99,15 @@ sequenceDiagram
     participant Kepala as PIC Kepala Kantor
 
     UserSection->>Engine: Create Document with Target = KEPALA KANTOR
-    Note over Engine: Target is KEPALA.<br/>Automatic Route Plan:<br/>1. HUMAS -> 2. KASUBBAG -> 3. KEPALA
-    Engine->>Humas: Notification: Incoming Document (Status: DITERUSKAN to HUMAS)
-    Humas->>Engine: Review -> Select "Diterima" or "Diproses"
-    Note over Engine: Diagram updates: Physical location<br/>moves to HUMAS PROTOKOL
-    Humas->>Engine: Review -> Select "Diteruskan" (Next hop: KASUBBAG TU)
-    Engine->>Kasubbag: Notification: Incoming Document (Status: DITERUSKAN to KASUBBAG)
-    Kasubbag->>Engine: Review -> Select "Diterima" or "Diproses"
-    Note over Engine: Diagram updates: Physical location<br/>moves to KASUBBAG TU
-    Kasubbag->>Engine: Review -> Select "Diteruskan" (Next hop: KEPALA KANTOR)
-    Engine->>Kepala: Notification: Incoming Document (Status: DITERUSKAN to KEPALA)
-    Kepala->>Engine: Review -> Select "Diterima" or "Diproses"
+    Note over Engine: Target is KEPALA.<br/>Automatic Route Plan:<br/>1. HUMAS -> 2. KASUBBAG -> 3. KEPALA<br/>Auto-Receive at HUMAS (Status: DITERIMA)
+    Engine->>Humas: Notification: Incoming Document Auto-Received at HUMAS
+    Humas->>Engine: Review -> Select "Teruskan" (Next hop: KASUBBAG TU)
+    Note over Engine: Auto-Receive at KASUBBAG TU (Status: DITERIMA)
+    Engine->>Kasubbag: Notification: Incoming Document Auto-Received at KASUBBAG
+    Kasubbag->>Engine: Review -> Select "Menunggu" or "Ditolak" or "Teruskan"
+    Note over Engine: When "Teruskan" selected:<br/>Auto-Receive at KEPALA KANTOR (Status: DITERIMA)
+    Engine->>Kepala: Notification: Incoming Document Auto-Received at KEPALA
+    Kepala->>Engine: Review -> Select "Menunggu" / Complete
     Note over Engine: Final Destination Reached: KEPALA KANTOR
 ```
 

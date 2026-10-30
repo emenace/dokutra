@@ -7,7 +7,7 @@ This document partitions the development of the **DOKUTRA** application into **5
 flowchart LR
     P1["Part 1: Backend Foundation, SQLite DB & 6-Hour Auth"] --> P2["Part 2: Mobile Webview UI Shell, Kemenag Green Theme & Dark/Light Mode"]
     P2 --> P3["Part 3: Create Document Tracker & Smart Routing Engine"]
-    P3 --> P4["Part 4: Big Incoming Alert & Review Workflow (Diterima/Diproses/Diteruskan)"]
+    P3 --> P4["Part 4: Big Incoming Alert, Auto-Receive & Review Workflow (Ditolak/Menunggu/Teruskan)"]
     P4 --> P5["Part 5: Interactive Diagram Visualizer & Final Polishing"]
 ```
 
@@ -65,21 +65,23 @@ flowchart LR
 
 ---
 
-## Part 4: Big Incoming Document Alert & Review Workflow
+## Part 4: Big Incoming Document Alert, Auto-Receive & Review Workflow
 ### Scope of Work:
-1. Implement the **Big Notification Banner** at the top of the Home Dashboard whenever incoming documents are waiting for the logged-in section (`status = 'DITERUSKAN'` and `pending_section_id = current_user_section`).
-2. Build the **Review Dokumen Masuk** modal/screen:
-   - Displays full document details, classification badge, origin, and transit history.
+1. Implement **Auto-Receive** upon document creation and forwarding:
+   - Documents sent to a section are automatically received (`current_status = 'DITERIMA'`, `current_section_id = target_section_id`, `pending_section_id = target_section_id`).
+2. Implement the **Big Notification Banner** at the top of the Home Dashboard whenever incoming documents are awaiting review at the logged-in section (`pending_section_id = current_user_section`).
+3. Build the **Review Dokumen Masuk** modal/screen:
+   - Displays full document details, classification badge, origin, and a slim single-line **Riwayat Perjalanan Dokumen** audit history.
    - Input field for **Keterangan / Catatan Tindak Lanjut**.
-   - Action buttons for status change: **`Diterima`**, **`Diproses`**, and **`Diteruskan`**.
-3. Implement physical location update logic:
-   - Choosing `Diterima` or `Diproses` officially moves `current_section_id` to the receiving section and clears `pending_section_id`.
-   - Choosing `Diteruskan` opens the forward dropdown or automatically advances to the next hop if part of a pre-planned route.
+   - Action radio options for review: **`Ditolak`**, **`Menunggu`**, and **`Teruskan`**.
+4. Implement review update logic:
+   - Choosing `Ditolak` or `Menunggu` keeps `current_section_id` at the current section, updates `current_status` to `DITOLAK` or `MENUNGGU`, and clears `pending_section_id`.
+   - Choosing `Teruskan` opens the forward dropdown (or automatically advances to the next hop if part of a pre-planned route) and auto-receives the document at the next section.
 
 ### Monitoring & Evaluation Checklist:
-- [ ] Prominent alert banner appears immediately when a document arrives for the current user's section.
-- [ ] Selecting `Diterima` or `Diproses` shifts the document location to the receiving section.
-- [ ] The chain `Section -> Humas Protokol -> Kasubbag TU -> Kepala Kantor` advances seamlessly between respective PIC logins.
+- [x] Forwarded documents are automatically marked `Diterima` at the receiving section and trigger the Big Notification Banner.
+- [x] Review modal displays slim single-line `Riwayat Perjalanan Dokumen` logs and `[Ditolak, Menunggu, Teruskan]` options.
+- [x] The chain `Section -> Humas Protokol -> Kasubbag TU -> Kepala Kantor` advances seamlessly between respective PIC logins.
 
 ---
 

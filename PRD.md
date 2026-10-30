@@ -6,7 +6,7 @@
 ## 1. Background & Objectives
 In the Kantor Kementerian Agama (Kemenag) Kota Metro office, physical documents (incoming letters, outgoing letters, proposals, dispositions, and employee files) frequently move between different sections/divisions for review, initialing/signing (*paraf*), approval, and follow-ups. Documents sometimes go missing or section staff are unaware of their current physical location.
 
-**DOKUTRA (Document Tracker)** is a web-based document tracking application optimized for **mobile/phone webview** and desktop browsers. It allows Person-in-Charge (PIC) users from each section to track document movements in real time using interactive diagrams, register new document movements, receive prominent incoming document alerts, and update document status (*Diterima*, *Diproses*, *Diteruskan*).
+**DOKUTRA (Document Tracker)** is a web-based document tracking application optimized for **mobile/phone webview** and desktop browsers. It allows Person-in-Charge (PIC) users from each section to track document movements in real time using interactive diagrams, register new document movements (which are **automatically received** at the destination section), receive prominent incoming document alerts, and review documents with actions (*Ditolak*, *Menunggu*, *Teruskan*).
 
 ---
 
@@ -41,8 +41,9 @@ The system is used by PIC staff across **11 Sections / Units** in Kantor Kemente
   - Theme preference is stored in the database (`users.theme_mode`) and cached locally.
 
 ### 3.2. Dashboard & Interactive Diagrams
-- **Big Notification Banner for Incoming Documents:**
-  - If a document is addressed/forwarded to the current logged-in user's section with status `DITERUSKAN` (pending acceptance), a prominent notification card/banner appears at the top of the Home Dashboard.
+- **Auto-Receive & Big Notification Banner for Incoming Documents:**
+  - Whenever a document is created or forwarded (`Teruskan`) to a destination section, it is **automatically received (`DITERIMA`)** at that target section (`current_section_id = target_section_id`, `current_status = 'DITERIMA'`), while `pending_section_id = target_section_id` flags it for incoming review.
+  - A prominent notification card/banner appears at the top of the Home Dashboard for any document awaiting review at the logged-in user's section.
   - Clicking this banner opens the Incoming Document Review modal/view.
 - **Focused Diagram View (Default View):**
   - Displays a flow diagram of document locations showing **only** the sections involved in the movement of the active/selected document.
@@ -74,19 +75,35 @@ A dedicated menu and form to register a new document tracker:
 3. When `HUMAS` or `KASUBBAG` reviews and chooses "Diteruskan", the system auto-populates the next leg of the route.
 
 ### 3.5. Review & Status Update for Incoming Documents
-When an incoming document arrives at a section, the section PIC reviews it and performs an action:
-- **Keterangan (Review Note):** Free-text note or remark.
-- **Action Status Selection:**
-  1. **`Diterima` (Received):** Physical document has been received. On the diagram, the document's physical location node **moves to this receiving section**.
-  2. **`Diproses` (In Process):** The document is currently being worked on / initialed / examined in this section. Location remains at this section with an "In Progress" badge.
-  3. **`Diteruskan` (Forwarded):** Document is finished in this section and forwarded to another section. Choosing this displays the target section dropdown (or auto-targets the next section if on a pre-planned route to Kasubbag/Kepala).
+When a document is forwarded to a section, it is **automatically `Diterima & Menunggu`** (`DITERIMA`) at that section (`Menunggu` is disabled as a manual selection). The section PIC reviews the document in the Review Modal:
+- **Slim Single-Line Colorized History (`Riwayat Perjalanan Dokumen`):**
+  - Displays a compact, single-line per entry audit trail with semantic colorization:
+    - **Red:** `Tolak` (`DITOLAK`)
+    - **Green:** `Diterima & Proses / Menunggu` (`DIBUAT`, `DITERIMA`, `MENUNGGU`)
+    - **Blue:** `Teruskan` (`DITERUSKAN`)
+- **Action Status Selection (Colored Cards — Red for `Tolak`, Blue for `Teruskan`):**
+  1. **Standard Sections (`PTSP`, `KEPEGAWAIAN`, `PENMAD`, `BIMAS_ISLAM`, `PAPKI`, `KATOLIK`, `ZAKAT_WAKAF`, `KEUANGAN`):**
+     - **`Tolak` (Red)**
+     - **`Teruskan` (Blue)** — displays target section dropdown.
+  2. **User `KASUBBAG` (`Kasubbag Tata Usaha`):**
+     - **`Tolak` (Red)**
+     - **`Teruskan` (Blue)** — displays target section dropdown (e.g., to forward to `Kepala Kantor`).
+     - **`Paraf / Tandatangan dan Teruskan ke Protokol` (Blue)** — third selection that **automatically selects `Humas Protokol` and hides the dropdown**.
+  3. **User `KEPALA` (`Kepala Kantor`):**
+     - **`Tolak` (Red)**
+     - **`Tandatangan dan Teruskan ke Protokol` (Blue)** — **automatically selects `Humas Protokol` and hides the dropdown**.
+  5. **Origin Section (when receiving a signed document back from `HUMAS`):**
+     - Displays **only one selection**: **`Selesai` (Green)** — clicking simpan marks the document as **`SELESAI`** (archived) and moves it into the **Arsip** view on `Daftar Dokumen Terlacak` on the Dashboard.
+- **Clickable `Daftar Dokumen Terlacak` & `Arsip` Button on Dashboard:**
+  - All in-progress and archived documents in `Daftar Dokumen Terlacak` are clickable by the source section (or any involved section) to inspect live status and full `Riwayat Perjalanan Dokumen` history.
+  - A dedicated **`Arsip`** toggle button on `Daftar Dokumen Terlacak` switches between active in-progress documents and archived (`Selesai`) documents.
 
 ---
 
 ## 4. Non-Functional Requirements
 - **Language Policy:**
   - **User Interface (UI):** Indonesian language (clear, professional, easy-to-use).
-  - **Database Model:** Indonesian entity names and values (`Diterima`, `Diproses`, `Diteruskan`, `Biasa`, `Penting`, `Rahasia`, section names).
+  - **Database Model:** Indonesian entity names and values (`Diterima`, `Menunggu`, `Ditolak`, `Diteruskan`, `Biasa`, `Penting`, `Rahasia`, section names).
   - **Codebase & Architecture:** English for variables, functions, routes, comments, and internal logic.
 - **Responsive & Mobile Webview First:**
   - Designed for smooth interaction inside phone webviews (touch targets $\ge 44$px, bottom navigation bar on mobile, zero horizontal overflow).
